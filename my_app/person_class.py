@@ -1,25 +1,52 @@
 class Person(object):
 	"""This class describes the instance of person
 	"""
-	def __init__(self,person_id, name):
-		self.name = person_id
+	def __init__(self,person_id = "", name = "", person_type = ""):
+		self.person_id = person_id
 		self.name = name
+		self.person_type = person_type
+		self.people = []
+
+	def add_person(self,person_id = "", name = "", person_type = ""):
+		self.person_id = person_id
+		self.name = name
+		self.person_type = person_type
+		self.people.append(self)
+		return self
 		
 class Fellow(Person):
 	"""This class inherits from the Person class 
         and defines an instance of fellow 
 	"""
-	def __init__(self, person_id, name, wants_accom = "N"):
-		super(Fellow, self).__init__(person_id, name)
+	def __init__(self, person_id = "", name = "", person_type = "", wants_accom = ""):
+		super(Fellow, self).__init__(person_id, name, person_type)
+		self.person_id = person_id
+		self.name = name
 		self.person_type = "Fellow"
-		self.wants_accom = wants_accom	
+		self.wants_accom = "N"
+
+
+	def add_person(self,person_id, name, person_type, wants_accom):
+		self.person_id = person_id
+		self.name = name
+		self.person_type = person_type		
+		return self
 		
 
 class Staff(Person):
 	"""This class inherits from the Person class 
         and defines an instance of Person
 	"""
-	def __init__(self, person_id, name):
-		super(Staff, self).__init__(person_id, name)
+	def __init__(self, person_id = "", name = "", person_type = ""):
+		super(Staff, self).__init__(person_id, name, person_type)
+		self.person_id = person_id
+		self.person_type = person_type
 		self.person_type = "Staff"
+
+	def add_person(self,person_id, name, person_type):
+		self.person_id = person_id
+		self.name = name
+		self.person_type = person_type		
+		return self
+		
 		
