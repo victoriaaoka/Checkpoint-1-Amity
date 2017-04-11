@@ -1,5 +1,7 @@
 import unittest
-from ..my_app.room_class import *
+import sys
+sys.path.append('../')
+from room_class import Room, OfficeSpace, LivingSpace
 
 
 class TestRoom(unittest.TestCase):

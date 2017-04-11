@@ -1,5 +1,7 @@
 import unittest
-from person_class import *
+import sys
+sys.path.append('../')
+from my_app.person_class import Person, Staff, Fellow
 
 class TestPerson(unittest.TestCase):
     def setUp(self):
