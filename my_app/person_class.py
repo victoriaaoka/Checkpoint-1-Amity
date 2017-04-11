@@ -1,5 +1,5 @@
 class Person(object):
-	"""This class describes the the instance of person
+	"""This class describes the instance of person
 	"""
 	def __init__(self,person_id, name):
 		self.name = person_id
