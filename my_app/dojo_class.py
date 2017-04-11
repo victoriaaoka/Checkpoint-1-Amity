@@ -15,23 +15,25 @@ class Dojo():
             raise TypeError("Use input of type string only")
         elif isinstance(room_type,str) and isinstance(room_name,str):
             if room_type.lower() == "office":
-                self.offices.append(room_name)
-                return "An office called " + room_name + " has been successfully created!"
+                new_office = OfficeSpace()
+                created_office = new_office.create_room(room_type, room_name)
+                self.offices.append(new_office)
+                print ("An office called " + room_name + " has been successfully created!")
+                #print (created_office.room_name)
+                #print (created_office.capacity)
+                return self
 
             elif room_type.lower() == "living space":
-                self.livingspaces.append(room_name)
-                return "A living space called " +room_name+" has been created"
+                new_livingspace = LivingSpace()
+                created_livingspace = new_livingspace.create_room(room_type, room_name)
+                self.livingspaces.append(created_livingspace)
+                print ("A living space called " +room_name+" has been successfully created")
             elif room_type.lower() != "office" or room_type.lower() != "living_space":
                 return "Wrong room_type! rooms can only be offices or living spaces"
         else:
-            return "Error"
-
-
-    def add_person():
-        if not isinstance(room_type, str) or not isinstance(room_name,str):
-            raise TypeError("bbb")
-            
+            return "Error"           
 
 my_room = Dojo()
-print (my_room.create_room("office", "Acacia"))
-print (my_room.create_room("Living Space", "Tsavo")) 
+my_room.create_room("office", "Acacia")
+print (my_room.create_room("Living Space", "Tsavo"))
+
