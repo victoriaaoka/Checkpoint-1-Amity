@@ -12,7 +12,7 @@ class Dojo():
         Rooms can either be an office or a living space.
         """
         if not isinstance(room_type, str) or not isinstance(room_name,str):
-            raise TypeError("bbb")
+            raise TypeError("Use input of type string only")
         elif isinstance(room_type,str) and isinstance(room_name,str):
             if room_type.lower() == "office":
                 self.offices.append(room_name)
@@ -28,7 +28,9 @@ class Dojo():
 
 
     def add_person():
-        pass
+        if not isinstance(room_type, str) or not isinstance(room_name,str):
+            raise TypeError("bbb")
+            
 
 my_room = Dojo()
 print (my_room.create_room("office", "Acacia"))
