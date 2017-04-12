@@ -7,12 +7,6 @@ class Person(object):
 		self.person_type = person_type
 		self.people = []
 
-	def add_person(self,person_id = "", name = "", person_type = ""):
-		self.person_id = person_id
-		self.name = name
-		self.person_type = person_type
-		self.people.append(self)
-		return self
 		
 class Fellow(Person):
 	"""This class inherits from the Person class 
@@ -26,13 +20,6 @@ class Fellow(Person):
 		self.wants_accom = "N"
 
 
-	def add_person(self,person_id, name, person_type, wants_accom):
-		self.person_id = person_id
-		self.name = name
-		self.person_type = person_type		
-		return self
-		
-
 class Staff(Person):
 	"""This class inherits from the Person class 
         and defines an instance of Person
@@ -42,11 +29,4 @@ class Staff(Person):
 		self.person_id = person_id
 		self.person_type = person_type
 		self.person_type = "Staff"
-
-	def add_person(self,person_id, name, person_type):
-		self.person_id = person_id
-		self.name = name
-		self.person_type = person_type		
-		return self
-		
 		
