@@ -1,4 +1,10 @@
+import sys
+from os import path
+sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 import random
+from colorama import init
+from termcolor import colored
+init()
 from room_class import Room, OfficeSpace, LivingSpace
 from person_class import Person, Fellow, Staff
 class Dojo():
@@ -8,6 +14,10 @@ class Dojo():
         self.all_staff = []
         self.offices = []
         self.livingspaces = []
+        self.all_rooms = []
+        self.fellow_ids = []
+        self.staff_ids = []
+        self.room_names = []
         
 
     def create_room(self,room_type, room_name):
@@ -15,25 +25,38 @@ class Dojo():
         Rooms can either be an office or a living space.
         """
         if not isinstance(room_type, str) or not isinstance(room_name,str):
-            raise TypeError("\n\nUse input of type string only\n\n")
+            raise TypeError (colored("\n\nUse input of type string only!\n\n", "red"))
         
-        elif isinstance(room_type,str) and isinstance(room_name,str):
+        elif room_type.lower() != "office" and room_type.lower() != "livingspace":
+            return colored("\n\nWrong room_type! rooms can only be offices or living spaces\n\n","red" )
+        #print(room_name)        
+        
+        else:
+
             if room_type.lower() == "office":
-                new_office = OfficeSpace(room_type, room_name)
-                self.offices.append(new_office)
-                print ("\n\nAn office called " + room_name + " has been successfully created!\n\n")
-                return self
+                new_office = OfficeSpace(room_type, room_name)                
+                for room in self.all_rooms:
+                    self.room_names.append(room.room_name)
+                if new_office.room_name in self.room_names:
+                    print (colored("\n\nThe Office room already exists!\n\n", "red"))
+                else:
+                    self.offices.append(new_office)
+                    self.all_rooms.append(new_office)
+                    print (colored("\n\nAn office called " + room_name + " has been successfully created!\n\n","blue"))
+                    return self 
 
             elif room_type.lower() == "livingspace":
                 new_livingspace = LivingSpace(room_type, room_name)
-                self.livingspaces.append(new_livingspace)
-                print ("\n\nA living space called " +room_name+" has been successfully created\n\n")
-                return self
-                
-            elif room_type.lower() != "office" or room_type.lower() != "living_space":
-                return "\n\nWrong room_type! rooms can only be offices or living spaces\n\n"
-        else:
-            return "Error"
+                for room in self.all_rooms:
+                    self.room_names.append(room.room_name)
+                if new_livingspace.room_name in self.room_names:
+                    print (colored("\n\nThe room name already exists!\n\n", "red"))
+                else:
+                    self.livingspaces.append(new_livingspace)
+                    self.all_rooms.append(new_livingspace)
+                    print (colored("\n\nA livingspace called " +room_name+" has been successfully created\n\n","blue"))
+                    return self
+
 
     def add_person(self, person_id, name, person_type, wants_accom = "N"):
         """This method adds a new fellow or staff into the system.
@@ -46,21 +69,33 @@ class Dojo():
             if person_type.lower() == "fellow":
                 new_fellow = Fellow(person_id, name, person_type, wants_accom)
                 self.all_fellows.append(new_fellow)
-                print ("\n\nFellow " + name +" has been successfully added.\n\n")
-                self.allocate_office(name)
-                if wants_accom == "Y":
-                    self.allocate_livingspace(name)
+                if new_fellow.person_id in self.fellow_ids:
+                    print (colored("\n\nFellow" + new_fellow.name + " already exists.\n\n","red"))
+                else:
+                    print(colored("\n\nFellow " + name +" has been successfully added.\n\n","blue"))
+                    self.allocate_office(name)
+                    self.fellow_ids.append(person_id)
+                    if wants_accom == "Y":
+                        self.allocate_livingspace(name)
+
 
             elif person_type.lower() == "staff":
+                
                 new_staff = Staff(person_id, name, person_type)
-                self.all_staff.append(new_staff)
-                print ("\n\nStaff " + name + "  has been successfully added.\n\n")
-                self.allocate_office(name)
+                
+                if new_staff.person_id in self.staff_ids:
+                    print(colored("\n\nStaff " +new_staff.name + "already exists.\n\n","red"))
+                
+                else:
+                    self.all_staff.append(new_staff)
+                    self.staff_ids.append(person_id)
+                    print (colored("\n\nStaff " + name + "  has been successfully added.\n\n", "blue"))
+                    self.allocate_office(name)
                     
     def allocate_office(self, name):
         """This function allocates a random office to a fellow and staff"""
         if len(self.offices) == 0:
-            print ("\n\nThere are no rooms created yet\n\n")
+            print (colored("\n\nThere are no rooms created yet\n\n", "red"))
             
         for office in self.offices:
             if len(self.offices) > 0:
@@ -69,7 +104,8 @@ class Dojo():
                     available_offices.append(office)
                     selected_office = random.choice(available_offices)
                     selected_office.occupants.append(name)
-                    print ("\n\n" +name + " has been allocated the office " + office.room_name +"\n\n")
+                    print (colored("\n\n" +name + " has been allocated the office " + selected_office.room_name +".\n\n","blue"))
+                    break
 
 
     def allocate_livingspace(self, name):
@@ -77,7 +113,7 @@ class Dojo():
         for livingspace in self.livingspaces:
             
             if len(self.livingspaces) == 0:
-                print ("\n\nThere are no livingspaces created yet\n\n")
+                print (colored("\n\nThere are no livingspaces created yet.\n\n","red"))
 
             elif len(self.livingspaces) > 0:
                 available_livingspace = []
@@ -85,14 +121,11 @@ class Dojo():
                     available_livingspace.append(livingspace)
                     selected_livingspace = random.choice(available_livingspace)
                     selected_livingspace.occupants.append(name)
-                    print ("\n\n"+ name + " has been allocated the livingspace " + livingspace.room_name+"\n\n")  
+                    print (colored("\n\n"+ name + " has been allocated the livingspace " + selected_livingspace.room_name+"\n\n","blue"))
+                    break
                     
                     
-dojo = Dojo()
-#dojo.create_room("office", "Acacia")
-#dojo.create_room("LivingSpace", "Tsavo")
-dojo.add_person("AND100", "Aoka", "Fellow", "Y")
-dojo.add_person("AND105", "Victoria", "Staff")
+
 
 
 
