@@ -53,9 +53,11 @@ def docopt_cmd(func):
 
 
 class DojoSpaceAllocationApp (cmd.Cmd):
-    intro = colored("\n\n\n"+"*" * 100, "white")+ colored("\n\n\n\n \t\t\tWelcome to the Dojo space allocation app!", "blue")\
-        + colored(" \n\n\n\n \t\t\tType help to view a list of commands.","white")\
-        + colored("\n\n\n\n \t\t\tClick on the screen to type.\n\n\n\n", "blue") + colored("*" * 100 + "\n\n\n", "white")
+    intro = colored("\n\n\n"+"*" * 150, "white")+ colored("\n\n\n\n \t\tHello, Welcome to the Dojo space allocation app!\n\n", "blue")\
+        +colored("\t\tThe commands are:\n\n \t\t>create_room <room_type> <room_name>\n\n\t\t")\
+        +colored(">add_person <person_id> <first_name> <last_name> (FELLOW|STAFF) [<wants_accom>]")\
+        +colored("\n\n \t\t>help\n\n\t\t>quit\n\n\t\t*To create multiple rooms, separate the room names with a comma(,)*","white")\
+        + colored("\n\n\n \t\tClick on the screen to type.\n\n\n\n", "white") + colored("*" * 150 + "\n\n\n", "white")
 
     prompt = "(DojoSpaceAllocationApp) "
     file = None
@@ -65,8 +67,8 @@ class DojoSpaceAllocationApp (cmd.Cmd):
     def do_create_room(self, arg):
         """Usage: create_room <room_type> <room_name>"""
         room_type = arg["<room_type>"]
-        room_names = arg["<room_name>"].split(",")
-        for room_name in room_names:
+        roomnames = arg["<room_name>"].split(",")
+        for room_name in roomnames:
             self.dojo.create_room(room_type, room_name)
         
 
@@ -85,12 +87,18 @@ class DojoSpaceAllocationApp (cmd.Cmd):
         else:
             person_type = staff
         wants_accom = arg["<wants_accom>"]
+        
+        if person_type.lower() == "staff" and wants_accom.lower == "y":
+            print (colored( "\n\nStaff cannot be allocated accomodation space\n\n","red"))
+            return
+                            
         self.dojo.add_person(person_id, name, person_type, wants_accom)
+        
 
     def do_quit(self, arg):
         """Exits the Interactive Mode."""
 
-        print(colored("\t\t\tGood Bye!", "yellow"))
+        print(colored("\t\t\tGood Bye!", "green"))
         exit()
 
 
