@@ -4,6 +4,7 @@ This application enables the facilities manager to create rooms within the dojo 
 The rooms can only be offices or living spaces.
 
 The application's commands are:
+
   create_room <room_type> <room_name>
   
   add_person <person_id> <person_name> <FELLOW|STAFF> [wants_accommodation]
