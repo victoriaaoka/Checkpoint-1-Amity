@@ -86,11 +86,12 @@ class DojoSpaceAllocationApp (cmd.Cmd):
             person_type = fellow
         else:
             person_type = staff
+
         wants_accom = arg["<wants_accom>"]
-        
-        if person_type.lower() == "staff" and wants_accom.lower == "y":
-            print (colored( "\n\nStaff cannot be allocated accomodation space\n\n","red"))
-            return
+        if not wants_accom:
+            wants_accom = "N"
+        elif person_type.lower() == "staff" and wants_accom.lower()== "y":
+            print (colored( "\n\nStaff cannot be allocated accomodation space\n\n","red"))          
                             
         self.dojo.add_person(person_id, name, person_type, wants_accom)
         
