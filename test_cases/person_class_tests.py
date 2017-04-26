@@ -20,11 +20,6 @@ class TestPerson(unittest.TestCase):
         self.assertEqual(self.fellow.wants_accom,'N' or 'Y',
                          msg = "Invalid option, wants accommodation can only be 'y' or 'N'")
 
-    def test_for_input_not_string(self):
-        with self.assertRaises(ValueError, msg = "Allow string input only"):
-            Fellow(1000, "fellowstaff")
-
-	
 
 if __name__ == '__main__':
     unittest.main()
