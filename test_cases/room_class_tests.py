@@ -26,10 +26,6 @@ class TestRoom(unittest.TestCase):
 
     def test_max_size_of_office_space(self):
         self.assertEqual(self.office_space.capacity, 6, msg ='The Maximum capacity is 6 occupants')
-
-    def test_raise_error_if_input_is_not_string(self):
-    	with self.assertRaises(TypeError, msg = 'Use string input only'):
-    		Blue = Room(100)
-    
+        
 if __name__ == '__main__':
     unittest.main()
