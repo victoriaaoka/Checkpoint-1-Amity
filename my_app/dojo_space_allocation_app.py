@@ -4,6 +4,7 @@ interactive command application.
 Usage:
     docopt create_room <room_type> <room_name>
     docopt add_person <person_id> <person_name> <FELLOW|STAFF> [wants_accommodation]
+    docopt print_room <room_name>
     docopt (-i | --interactive)
     docopt (-h | --help | --version)
 Options:
@@ -35,8 +36,9 @@ def docopt_cmd(func):
         except DocoptExit as e:
             """ To print a message to the user when invalid commands are entered."""
 
-            print("Invalid Command!")
+            print("\n\nInvalid Command!\n\n")
             print(e)
+            print ("\n\n")
             return
 
         except SystemExit:
@@ -53,11 +55,13 @@ def docopt_cmd(func):
 
 
 class DojoSpaceAllocationApp (cmd.Cmd):
-    intro = colored("\n\n\n"+"*" * 150, "white")+ colored("\n\n\n\n \t\tHello, Welcome to the Dojo space allocation app!\n\n", "blue")\
-        +colored("\t\tThe commands are:\n\n \t\t>create_room <room_type> <room_name>\n\n\t\t")\
-        +colored(">add_person <person_id> <first_name> <last_name> (FELLOW|STAFF) [<wants_accom>]")\
-        +colored("\n\n \t\t>help\n\n\t\t>quit\n\n\t\t*To create multiple rooms, separate the room names with a comma(,)*","white")\
-        + colored("\n\n\n \t\tClick on the screen to type.\n\n\n\n", "white") + colored("*" * 150 + "\n\n\n", "white")
+    intro = colored("\n\n\n"+"*" * 170, "white")+ colored("\n\n\t\tHello, Welcome to the Dojo space allocation app!\n\n", "blue")\
+        +colored("\t\tThe commands are:\n\n \t\t> create_room <room_type> <room_name>\n\n\t\t")\
+        +colored("> add_person <person_id> <first_name> <last_name> (FELLOW|STAFF) [<wants_accom>]")\
+        +colored("\n\n \t\t> print_room <room_name>\n\n \t\t> help\n\n\t\t> quit\n\n")\
+        +colored("\n\t\t* To create multiple rooms, separate the room names with a comma(,) ","yellow")\
+        +colored("\n\n\t\t* To print multiple rooms, separate the room names with a comma(,) ","yellow")\
+        + colored("\n\n\t\t* Click on the screen to type.\n\n", "yellow") + colored("*" * 170 + "\n\n\n", "white")
 
     prompt = "(DojoSpaceAllocationApp) "
     file = None
@@ -94,12 +98,19 @@ class DojoSpaceAllocationApp (cmd.Cmd):
             print (colored( "\n\nStaff cannot be allocated accomodation space\n\n","red"))          
                             
         self.dojo.add_person(person_id, name, person_type, wants_accom)
+
+    @docopt_cmd
+    def do_print_room(self, arg):
+        """Usage: print_room <room_name>"""
+        room_name = arg["<room_name>"]
+        roomnames = arg["<room_name>"].split(",")
+        for room_name in roomnames:
+            self.dojo.print_room(room_name)
         
 
     def do_quit(self, arg):
         """Exits the Interactive Mode."""
-
-        print(colored("\t\t\tGood Bye!", "green"))
+        print(colored("\n\n\t\t\tGood Bye! See you soon!\n\n", "green"))
         exit()
 
 
