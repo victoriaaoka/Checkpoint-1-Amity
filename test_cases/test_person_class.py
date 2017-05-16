@@ -11,7 +11,7 @@ class TestPerson(unittest.TestCase):
     def test_fellow_person_type(self):
         self.assertEqual( self.fellow.person_type, "Fellow" ,
                           msg = "Invalid person_type specified")
-	    
+
     def test_staff_person_type(self):
         self.assertEqual( self.staff.person_type, "Staff" ,
                           msg = "Invalid person_type specified")
