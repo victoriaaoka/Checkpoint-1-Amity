@@ -1,3 +1,4 @@
+
 class Room(object):
         """Room class describes the characteristics of each
         instance of a room created
@@ -9,7 +10,7 @@ class Room(object):
                 self.all_rooms = []
                 self.all_rooms.append(self)
                 #return self
-        
+
 class OfficeSpace(Room):
         """This class defines an instance of each Office
         and inherits from Room class
@@ -20,8 +21,8 @@ class OfficeSpace(Room):
                 self.room_name = room_name
                 self.occupants = []
                 self.capacity = 6
-                #return self                
-        
+                #return self
+
 class LivingSpace(Room):
         """This class defines an instance of each Livingspace
         and inherits from Room class
@@ -34,6 +35,6 @@ class LivingSpace(Room):
                 self.capacity = 4
                 self.all_rooms.append(self)
                 #return self
-                
+
 
 
