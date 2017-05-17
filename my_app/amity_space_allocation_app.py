@@ -58,6 +58,7 @@ class AmitySpaceAllocationApp (cmd.Cmd):
     intro = colored("\n\n\n"+"*" * 170, "white")+ colored("\n\n\t\tHello, Welcome to the Amity space allocation app!\n\n", "blue")\
         +colored("\t\tThe commands are:\n\n \t\t> create_room <room_type> <room_name>\n\n\t\t")\
         +colored("> add_person <person_id> <first_name> <last_name> (FELLOW|STAFF) [<wants_accom>]")\
+        +colored("\n\n \t\t> load_people <file_name>")\
         +colored("\n\n \t\t> print_room <room_name>\n\n \t\t> help\n\n\t\t> quit\n\n")\
         +colored("\n\t\t* To create multiple rooms, separate the room names with a comma(,) ","yellow")\
         +colored("\n\n\t\t* To print multiple rooms, separate the room names with a comma(,) ","yellow")\
