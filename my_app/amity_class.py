@@ -66,6 +66,7 @@ class Amity():
 
         elif person_type.lower() != "staff" and person_type.lower() != "fellow":
             print (colored("\n\nWrong person_type! A person can only be a staff or fellow\n\n","red" ))
+            return "Wrong person_type! A person can only be a staff or fellow"
 
         else:
             if person_type.lower() == "fellow":
@@ -139,15 +140,17 @@ class Amity():
     def print_room(self, room_name):
             """This method prints a list of the specified room's occupants"""
             if not room_name.lower() in [room.room_name.lower() for room in itertools.chain(self.offices, self.livingspaces)]:
-                print("\nThe room " + room_name+ " does not exist!\n" )
+                print(colored("\nThe room " + room_name+ " does not exist!\n" ,"red"))
 
             else:
                 for room in itertools.chain(self.offices, self.livingspaces):
                     if len(room.occupants) <= 0:
                         print (colored("\n\nThe room has no occupants\n\n", "yellow"))
+                        return "The room has no occupants"
                     else:
                         table = enumerate(room.occupants, start = 1)
                         print ("\n\n" + tabulate(table, headers=[room_name], tablefmt="fancy_grid"))
+
 
     def load_people(self, file_name):
         """This method adds people from a txt file.
