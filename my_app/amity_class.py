@@ -1,4 +1,4 @@
-import os
+import os.path
 import sys
 import itertools
 import random
@@ -10,7 +10,7 @@ from .room_class import Room, OfficeSpace, LivingSpace
 init()
 
 
-class Amity():
+class Amity(object):
     """This class contains all the methods/functions required . """
 
     def __init__(self):
@@ -80,6 +80,7 @@ class Amity():
                     self.allocate_office(name)
                     if wants_accom == "Y":
                         self.allocate_livingspace(name)
+                        return "There are no available living spaces! Added to waiting List"
                     return "Added successfully"
 
 
@@ -89,7 +90,7 @@ class Amity():
                 new_staff = Staff(person_id, name, person_type)
 
                 if new_staff.person_id in self.fellow_and_staff_ids:
-                    print(colored("\n\nStaff " + new_staff.name + ", id: "+ new_staff.person_id +" already exists.\n\n","red"))
+                    print(colored("\n\nStaff id: "+ new_staff.person_id +" already exists.\n\n","red"))
 
 
                 else:
@@ -103,7 +104,8 @@ class Amity():
         """This method allocates a random office to a new fellow or staff"""
 
         if len(self.offices) == 0:
-            print (colored("\n\nThere are no offices created yet\n\n", "red"))
+            self.office_waitinglist.append(name)
+            print (colored("\n\nThere are no offices created yet! Added to waiting list \n\n", "red"))
         elif len(self.offices) > 0:
             available_offices = []
             full_offices = []
@@ -122,7 +124,8 @@ class Amity():
         """" This method allocates a living space to fellows who want accommodation"""
 
         if len(self.livingspaces) == 0:
-            print (colored("\n\nThere are no living spaces created yet\n\n", "red"))
+            self.livingspace_waitinglist.append(name)
+            print (colored("\n\nThere are no living spaces created yet! Added to waiting list.\n\n", "red"))
         elif len(self.livingspaces) > 0:
             available_livingspaces = []
             full_livingspaces = []
@@ -148,8 +151,10 @@ class Amity():
                         print (colored("\n\nThe room has no occupants\n\n", "yellow"))
                         return "The room has no occupants"
                     else:
-                        table = enumerate(room.occupants, start = 1)
-                        print ("\n\n" + tabulate(table, headers=[room_name], tablefmt="fancy_grid"))
+                        while room.room_name == room_name:
+                            table = enumerate(room.occupants, start = 1)
+                            print ("\n\n" + tabulate(table, headers=[room.room_name+" |  "+ room.room_type], tablefmt="fancy_grid"))
+                            break
 
 
     def load_people(self, file_name):
@@ -176,7 +181,7 @@ class Amity():
                             name = read_line[1] + " " + read_line[2]
                             person_type = read_line[3]
                         except IndexError:
-                            wants_accom = "N"
+                            wants_accom = read_line[4]
 
                         self.add_person(person_id, name, person_type, wants_accom="N")
 
@@ -189,7 +194,7 @@ class Amity():
         pass
 
 
-    def reallocate_person(self):
+    def reallocate_person(self, person_id, new_room):
         pass
 
     def save_state(self):
