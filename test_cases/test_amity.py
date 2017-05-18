@@ -1,9 +1,11 @@
 import unittest
 import sys
-sys.path.append('../')
-from my_app.amity_class import *
-
-
+import os
+# sys.path.append('../')
+from tabulate import tabulate
+from colorama import init
+from termcolor import colored
+from my_app.amity_class import Amity
 
 class Test_amity(unittest.TestCase):
 
@@ -58,7 +60,7 @@ class Test_amity(unittest.TestCase):
          aoka = self.amity.add_person(" ", "Aoka Victoria", "Cook")
          self.assertEqual(aoka, "Wrong person_type! A person can only be a staff or fellow")
 
-    def test_print_allocations_successfully(self):
+    def test_print_room_successfully(self):
         room = self.amity.create_room("office", "Red")
         self.amity.add_person("AND100", "Aoka Victoria", "staff")
         self.amity.add_person("AND200", "Jimmy Scott", "fellow")
@@ -87,60 +89,83 @@ class Test_amity(unittest.TestCase):
         self.amity.load_people("names")
         self.assertTrue(os.path.isfile("names.txt"))
 
+    def test_allocate_office_successfully(self):
+        office = self.amity.create_room("office", "Java")
+        self.amity.add_person("AND100", "Aoka Victoria", "staff")
+        self.amity.add_person("AND200", "Jimmy Scott", "fellow")
+        self.assertEqual(len(office.occupants), 2)
 
-class Test_reallocate_person(unittest.TestCase):
-    """This class will test the method - reallocate person"""
+    def test_allocate_a_full_livingspace(self):
+        dojo_lv = self.amity.create_room("livingspace", "Dojo")
+        self.amity.add_person("AND100", "Aoka Victoria", "fellow", "Y")
+        self.amity.add_person("AND200", "Jimmy Scott", "fellow", "Y")
+        self.amity.add_person("AND300", "Geo Green", "fellow", "Y")
+        self.amity.add_person("AND400", "Adrian Otieno", "fellow", "Y")
+        result = self.amity.add_person("AND500", "Daisy Macharia", "fellow", "Y")
+        self.assertEqual(result, "There are no available living spaces! Added to waiting List")
 
-    def test_successful_office_reallocation(self):
+    def test_successful_room_reallocation(self):
         """Test  correct office reallocation"""
-        pass
+        self.amity.create_room("office","Python")
+        self.amity.add_person("AND100", "Aoka Victoria", "fellow")
+        self.amity.create_room("office", "Docopt")
+        result = self.amity.reallocate_person("AND100", "Docopt")
+        self.assertEqual(result, "Reallocation successful!")
 
-    def test_successful_living_space_reallocation(self):
-        """Test  correct living_space reallocation"""
-        pass
-
-    def test_reallocation_to_full_office(self):
+    def test_reallocation_to_same_room(self):
         """Test for reallocation to a full office"""
-        pass
-
-    def test_reallocation_to_full_living_space(self):
-        """Test for reallocation to a full living_space"""
-        pass
+        self.amity.create_room("office","Python")
+        self.amity.add_person("AND100", "Aoka Victoria", "fellow")
+        result = self.amity.reallocate_person("AND100", "Python")
+        self.assertEqual(result, "Person cannot be reallocated the same room!")
 
     def test_reallocate_a_Person_not_registered(self):
         """Test for reallocating a person that is not registered"""
-        pass
+        self.amity.create_room("office", "Pacific")
+        self.amity.add_person("AND100", "Joseph Kachulio", "Fellow", "Y")
+        self.amity.create_room("office", "Victoria")
+        result = self.amity.reallocate_person("AND200", "Victoria")
+        self.assertEqual(result, "The person does not exist!")
+
+    def test_reallocate_to_a_room_not_available(self):
+        self.amity.create_room("office", "Guruz")
+        self.amity.add_person("AND222", "Mac Felix", "staff")
+        result = self.amity.reallocate_person("AND222", "mordor")
+        self.assertEqual(result, "The room mordor does not exist.")
 
     def test_reallocate_a_person_without_a_room(self):
         """Test for reallocating a person who doesn't have a room yet"""
-        pass
+        self.amity.add_person("AND200", "Aoka Victoria", "fellow")
+        result = self.amity.reallocate_person("AND200", "Tsavo")
+        self.assertEqual(result, "The person, id: AND200 has not been allocated any room yet!")
 
-class Test_print_unallocated(unittest.TestCase):
-    """Test the print_unallocated method"""
-    def test_successfully_print_unallocated(self):
-        pass
+    def test_reallocate_from_office_to_livingspace(self):
+        self.amity.create_room("office", "Mara")
+        self.amity.add_person("AND111", "Judith Aoka", "fellow")
+        self.amity.create_room("livingspace", "Bakhita")
+        result = self.amity.reallocate_person("AND111", "Bakhita")
+        self.assertEqual(result, "Failed! You can only perform an office - office or livingspace - livingspace reallocation.")
 
-class Test_print_room(unittest.TestCase):
-    """Test the print_room method"""
-    def test_print_room_successfully(self):
-        pass
+    def test_reallocate_from_livingspace_to_office(self):
+        self.amity.create_room("livingspace", "Lux")
+        self.amity.add_person("AND111", "Judith Aoka", "fellow")
+        self.amity.create_room("office", "java")
+        result = self.amity.reallocate_person("AND111", "java")
+        self.assertEqual(result, "Failed! You can only perform an office - office or livingspace - livingspace reallocation.")
 
-    def test_print_empty_room(self):
-        pass
+    def test_print_unallocated(self):
+        self.amity.add_person("AND333", "Kevin Tumbo", "Fellow", 'Y')
+        result = self.amity.print_unallocated("file_name")
+        self.assertEqual(result, "Unallocated list saved successfully!")
 
-    def test_print_a_room_not_created(self):
-        pass
+    def test_print_allocations_successfully(self):
+        dojo_lv = self.amity.create_room("livingspace", "Dojo")
+        self.amity.add_person("AND100", "Aoka Victoria", "fellow", "Y")
+        self.amity.add_person("AND200", "Jimmy Scott", "fellow", "Y")
+        self.amity.add_person("AND300", "Geo Green", "fellow", "Y")
+        self.amity.add_person("AND400", "Adrian Otieno", "fellow", "Y")
+        result = self.amity.print_allocations("file_name")
+        self.assertEqual(result, "Allocations saved successfully!")
 
-class Test_save_state(unittest.TestCase):
-    """Test the save_state method"""
-    pass
-
-class Test_load_state(unittest.TestCase):
-    """Test the load_state method"""
-    pass
-
-
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
