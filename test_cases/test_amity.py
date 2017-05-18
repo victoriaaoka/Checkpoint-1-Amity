@@ -1,0 +1,171 @@
+import unittest
+import sys
+import os
+# sys.path.append('../')
+from tabulate import tabulate
+from colorama import init
+from termcolor import colored
+from my_app.amity_class import Amity
+
+class Test_amity(unittest.TestCase):
+
+    def setUp(self):
+        self.amity = Amity()
+
+    def test_room_created_successfully_output(self):
+        result = self.amity.create_room("office", "val")
+        self.assertEqual(result.room_name, "val")
+
+    def test_create_room_with_wrong_room_type(self):
+        result = self.amity.create_room("game_room", "Blue")
+        self.assertEqual(result, "Invalid room type!")
+
+    def test_create_office_successfully(self):
+        blue_office = self.amity.create_room("office", "blue")
+        self.assertTrue(blue_office)
+
+    def test_raise_error_if_room_type_is_not_string(self):
+        with self.assertRaises(TypeError, msg="Use string input only"):
+            blue_office = self.amity.create_room(201,"Blue")
+
+    def test_raise_error_if_room_name_is_not_string(self):
+        with self.assertRaises(TypeError, msg="Use string input only"):
+            blue_office = self.amity.create_room("Office",101)
+
+    def test_add_staff_successfully_output(self):
+        result = self.amity.add_person(person_id = "AND100", name = "Victoria Aoka", person_type = "Staff")
+        self.assertEqual(result, "Added successfully")
+
+    def test_add_fellow_successfully(self):
+        result = self.amity.add_person("AND105", "George Wafula", "Fellow")
+        self.assertEqual(result, "Added successfully")
+
+    def test_for_person_id_not_string(self):
+        with self.assertRaises(TypeError, msg="Use input type of string only"):
+            self.amity.add_person(100, "Aoka Victoria", "fellow", "Y")
+
+    def test_for_person_name_not_string(self):
+        with self.assertRaises(TypeError, msg="Use input type of string only"):
+            self.amity.add_person("AND100", 100, "fellow", "Y")
+
+    def test_for_person_person_type_not_string(self):
+        with self.assertRaises(TypeError, msg="Use input type of string only"):
+            self.amity.add_person("AND100", "Aoka Victoria", 100, "Y")
+
+    def test_for_person_type_not_fellow_or_staff(self):
+        aoka = self.amity.add_person("AND100", "Aoka Victoria", "Cook")
+        self.assertEqual(aoka, "Wrong person_type! A person can only be a staff or fellow")
+
+    def test_for_add_person_without_id(self):
+         aoka = self.amity.add_person(" ", "Aoka Victoria", "Cook")
+         self.assertEqual(aoka, "Wrong person_type! A person can only be a staff or fellow")
+
+    def test_print_room_successfully(self):
+        room = self.amity.create_room("office", "Red")
+        self.amity.add_person("AND100", "Aoka Victoria", "staff")
+        self.amity.add_person("AND200", "Jimmy Scott", "fellow")
+        result = self.amity.print_room("red")
+        table = enumerate(room.occupants, start = 1)
+        expected_output = print ("\n\n" + tabulate(table, headers=[room.room_name], tablefmt="fancy_grid"))
+        self.assertEqual(result, expected_output)
+
+    def test_print_empty_room(self):
+        office_red = self.amity.create_room("office", "Red")
+        result = self.amity.print_room("red")
+        self.assertEqual(result, "The room has no occupants")
+
+    def test_print_a_room_that_does_not_exist(self):
+        result = self.amity.print_room("java")
+        expected_output = print(colored("\nThe room java does not exist!\n" ,"red"))
+        self.assertEqual(result, expected_output)
+
+    def test_load_empty_file(self):
+        result = self.amity.load_people("empty_file")
+        expected_output = print(colored("\n\nThe file empty_file.txt is empty!\n","yellow"))
+        self.assertEqual(result, expected_output)
+
+
+    def test_load_people_from_an_existing_file(self):
+        self.amity.load_people("names")
+        self.assertTrue(os.path.isfile("names.txt"))
+
+    def test_allocate_office_successfully(self):
+        office = self.amity.create_room("office", "Java")
+        self.amity.add_person("AND100", "Aoka Victoria", "staff")
+        self.amity.add_person("AND200", "Jimmy Scott", "fellow")
+        self.assertEqual(len(office.occupants), 2)
+
+    def test_allocate_a_full_livingspace(self):
+        dojo_lv = self.amity.create_room("livingspace", "Dojo")
+        self.amity.add_person("AND100", "Aoka Victoria", "fellow", "Y")
+        self.amity.add_person("AND200", "Jimmy Scott", "fellow", "Y")
+        self.amity.add_person("AND300", "Geo Green", "fellow", "Y")
+        self.amity.add_person("AND400", "Adrian Otieno", "fellow", "Y")
+        result = self.amity.add_person("AND500", "Daisy Macharia", "fellow", "Y")
+        self.assertEqual(result, "There are no available living spaces! Added to waiting List")
+
+    def test_successful_room_reallocation(self):
+        """Test  correct office reallocation"""
+        self.amity.create_room("office","Python")
+        self.amity.add_person("AND100", "Aoka Victoria", "fellow")
+        self.amity.create_room("office", "Docopt")
+        result = self.amity.reallocate_person("AND100", "Docopt")
+        self.assertEqual(result, "Reallocation successful!")
+
+    def test_reallocation_to_same_room(self):
+        """Test for reallocation to a full office"""
+        self.amity.create_room("office","Python")
+        self.amity.add_person("AND100", "Aoka Victoria", "fellow")
+        result = self.amity.reallocate_person("AND100", "Python")
+        self.assertEqual(result, "Person cannot be reallocated the same room!")
+
+    def test_reallocate_a_Person_not_registered(self):
+        """Test for reallocating a person that is not registered"""
+        self.amity.create_room("office", "Pacific")
+        self.amity.add_person("AND100", "Joseph Kachulio", "Fellow", "Y")
+        self.amity.create_room("office", "Victoria")
+        result = self.amity.reallocate_person("AND200", "Victoria")
+        self.assertEqual(result, "The person does not exist!")
+
+    def test_reallocate_to_a_room_not_available(self):
+        self.amity.create_room("office", "Guruz")
+        self.amity.add_person("AND222", "Mac Felix", "staff")
+        result = self.amity.reallocate_person("AND222", "mordor")
+        self.assertEqual(result, "The room mordor does not exist.")
+
+    def test_reallocate_a_person_without_a_room(self):
+        """Test for reallocating a person who doesn't have a room yet"""
+        self.amity.add_person("AND200", "Aoka Victoria", "fellow")
+        result = self.amity.reallocate_person("AND200", "Tsavo")
+        self.assertEqual(result, "The person, id: AND200 has not been allocated any room yet!")
+
+    def test_reallocate_from_office_to_livingspace(self):
+        self.amity.create_room("office", "Mara")
+        self.amity.add_person("AND111", "Judith Aoka", "fellow")
+        self.amity.create_room("livingspace", "Bakhita")
+        result = self.amity.reallocate_person("AND111", "Bakhita")
+        self.assertEqual(result, "Failed! You can only perform an office - office or livingspace - livingspace reallocation.")
+
+    def test_reallocate_from_livingspace_to_office(self):
+        self.amity.create_room("livingspace", "Lux")
+        self.amity.add_person("AND111", "Judith Aoka", "fellow")
+        self.amity.create_room("office", "java")
+        result = self.amity.reallocate_person("AND111", "java")
+        self.assertEqual(result, "Failed! You can only perform an office - office or livingspace - livingspace reallocation.")
+
+    def test_print_unallocated(self):
+        self.amity.add_person("AND333", "Kevin Tumbo", "Fellow", 'Y')
+        result = self.amity.print_unallocated("file_name")
+        self.assertEqual(result, "Unallocated list saved successfully!")
+
+    def test_print_allocations_successfully(self):
+        dojo_lv = self.amity.create_room("livingspace", "Dojo")
+        self.amity.add_person("AND100", "Aoka Victoria", "fellow", "Y")
+        self.amity.add_person("AND200", "Jimmy Scott", "fellow", "Y")
+        self.amity.add_person("AND300", "Geo Green", "fellow", "Y")
+        self.amity.add_person("AND400", "Adrian Otieno", "fellow", "Y")
+        result = self.amity.print_allocations("file_name")
+        self.assertEqual(result, "Allocations saved successfully!")
+
+if __name__ == "__main__":
+    unittest.main()
