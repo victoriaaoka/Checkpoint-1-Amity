@@ -1,1 +1,1 @@
-# BC17 checkpoint 1 <br /> [![Build Status](https://travis-ci.org/victoriaaoka/Checkpoint-1-Amity.svg?branch=master)](https://travis-ci.org/victoriaaoka/Checkpoint-1-Amity)
+# BC17 checkpoint 1 <br /> [![Build Status](https://travis-ci.org/victoriaaoka/Checkpoint-1-Amity.svg?branch=master)](https://travis-ci.org/victoriaaoka/Checkpoint-1-Amity) [![Coverage Status](https://coveralls.io/repos/github/victoriaaoka/Checkpoint-1-Amity/badge.svg?branch=master)](https://coveralls.io/github/victoriaaoka/Checkpoint-1-Amity?branch=master)
