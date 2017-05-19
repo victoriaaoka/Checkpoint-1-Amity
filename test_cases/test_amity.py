@@ -64,8 +64,8 @@ class Test_amity(unittest.TestCase):
 
     def test_for_add_person_without_id(self):
         """Tests the addition of a user without an ID number."""
-         aoka = self.amity.add_person(" ", "Aoka Victoria", "Cook")
-         self.assertEqual(aoka, "Wrong person_type! A person can only be a staff or fellow")
+        aoka = self.amity.add_person(" ", "Aoka Victoria", "Cook")
+        self.assertEqual(aoka, "Wrong person_type! A person can only be a staff or fellow")
 
     def test_print_room_successfully(self):
         """Tests output produced by print_room method."""
@@ -108,7 +108,7 @@ class Test_amity(unittest.TestCase):
         self.assertEqual(len(office.occupants), 2)
 
     def test_allocate_a_full_livingspace(self):
-        Tests the
+        """Tests allocation of a fellow to a living space that is fully occupied"""
         dojo_lv = self.amity.create_room("livingspace", "Dojo")
         self.amity.add_person("AND100", "Aoka Victoria", "fellow", "Y")
         self.amity.add_person("AND200", "Jimmy Scott", "fellow", "Y")
