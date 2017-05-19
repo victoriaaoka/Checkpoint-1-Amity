@@ -1,0 +1,13 @@
+language: python
+python:
+
+  - 3.4
+
+install:
+    - pip install -r requirements.txt
+    - pip install coveralls
+    -pip install pytest-cov
+
+script:
+  - py.test --cov-report=term --cov=test_cases tests
+after_success: coveralls
