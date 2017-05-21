@@ -95,6 +95,10 @@ class AmitySpaceAllocationApp (cmd.Cmd):
         wants_accom = arg["<wants_accom>"]
         if not wants_accom:
             wants_accom = "N"
+
+        elif wants_accom.lower() != "n" and wants_accom.lower() != "y":
+            print (colored("\n\nWants accommodation can only be 'Y' or 'N'\n\n", "red"))
+
         elif person_type.lower() == "staff" and wants_accom.lower()== "y":
             print (colored( "\n\nStaff cannot be allocated accomodation space\n\n","red"))
 
