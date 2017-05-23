@@ -11,7 +11,10 @@ init()
 
 
 class Amity(object):
-    """This class contains all the methods/functions required . """
+    """
+    This class contains all the methods/functions required for the
+    entire amity system.
+    """
 
     def __init__(self):
         self.all_fellows = []
@@ -24,7 +27,8 @@ class Amity(object):
 
 
     def create_room(self,room_type, room_name):
-        """This method creates rooms based on a user's input.
+        """
+        This method creates rooms based on a user's input.
         Rooms can either be an office or a living space.
         """
         if not isinstance(room_type, str) or not isinstance(room_name,str):
@@ -33,7 +37,6 @@ class Amity(object):
         elif room_type.lower() != "office" and room_type.lower() != "livingspace":
             print (colored("\n\nWrong room_type! rooms can only be offices or living spaces\n\n","red" ))
             return("Invalid room type!")
-        #print(room_name)
 
         else:
 
@@ -57,7 +60,8 @@ class Amity(object):
 
 
     def add_person(self, person_id, name, person_type, wants_accom = "N"):
-        """This method adds a new fellow or staff into the system.
+        """
+        This method adds a new fellow or staff into the system.
         It also calls the allocate_livingspace and allocate_office method to assign the new staff and fellow rooms.
         """
         if not isinstance(person_id, str) or not isinstance(name,str) or not isinstance(person_type,str):
@@ -78,7 +82,7 @@ class Amity(object):
                     print(colored("\n\nFellow " + name +" has been successfully added.\n\n","blue"))
                     self.fellow_and_staff_ids.append(person_id)
                     self.allocate_office(name)
-                    if wants_accom == "Y":
+                    if wants_accom.lower() == "y":
                         self.allocate_livingspace(name)
                         return "There are no available living spaces! Added to waiting List"
                     return "Added successfully"
@@ -101,7 +105,9 @@ class Amity(object):
                     return "Added successfully"
 
     def allocate_office(self, name):
-        """This method allocates a random office to a new fellow or staff"""
+        """
+        This method allocates a random office to a new fellow or staff
+        """
 
         if len(self.offices) == 0:
             self.office_waitinglist.append(name)
@@ -121,7 +127,9 @@ class Amity(object):
                 print (colored("\n\nThere are no available offices! Added to waiting List.\n\n", "red"))
 
     def allocate_livingspace(self, name):
-        """" This method allocates a living space to fellows who want accommodation"""
+        """"
+        This method allocates a living space to fellows who want accommodation
+        """
 
         if len(self.livingspaces) == 0:
             self.livingspace_waitinglist.append(name)
@@ -141,24 +149,30 @@ class Amity(object):
                 print (colored("\n\nThere are no available living spaces! Added to waiting List\n\n", "red"))
 
     def print_room(self, room_name):
-            """This method prints a list of the specified room's occupants"""
-            if not room_name.lower() in [room.room_name.lower() for room in itertools.chain(self.offices, self.livingspaces)]:
+            """
+            This method prints a list of the specified room's occupants
+            """
+            if not room_name.lower() in [room.room_name.lower()
+for room in itertools.chain(self.offices, self.livingspaces)]:
                 print(colored("\nThe room " + room_name+ " does not exist!\n" ,"red"))
 
             else:
                 for room in itertools.chain(self.offices, self.livingspaces):
-                    if len(room.occupants) <= 0:
-                        print (colored("\n\nThe room has no occupants\n\n", "yellow"))
-                        return "The room has no occupants"
-                    else:
-                        while room.room_name == room_name:
+                    while room.room_name.lower() == room_name.lower():
+                        if len(room.occupants) <= 0:
+                            print(colored("\n\nThe room has no occupants\n\n", "yellow"))
+                            return "The room has no occupants"
+                        else:
                             table = enumerate(room.occupants, start = 1)
-                            print ("\n\n" + tabulate(table, headers=[room.room_name+" |  "+ room.room_type], tablefmt="fancy_grid"))
+                            print ("\n\n" + tabulate(table, headers=[room.room_name+" |  \
+"+ room.room_type], tablefmt="fancy_grid"))
+                            print("\n\n")
                             break
 
 
     def load_people(self, file_name):
-        """This method adds people from a txt file.
+        """
+        This method adds people from a txt file.
         """
 
         if not os.path.isfile(file_name + ".txt"):
@@ -180,21 +194,62 @@ class Amity(object):
                             person_id = read_line[0]
                             name = read_line[1] + " " + read_line[2]
                             person_type = read_line[3]
-                        except IndexError:
                             wants_accom = read_line[4]
+                        except IndexError:
+                            wants_accom="N"
 
-                        self.add_person(person_id, name, person_type, wants_accom="N")
+                        self.add_person(person_id, name, person_type, wants_accom=wants_accom)
 
-            print (colored("\n\nData loaded successfully\n\n", "blue"))
+            print (colored("\n\nData loaded successfully!\n\n", "green"))
 
-    def print_allocations(self):
+    def print_allocations(self, filename=None):
+        """
+        This method prints a list of allocations onto the screen.
+        Specifying the optional -o option ie, the file _name,
+        outputs the registered allocations to a txt file.
+        """
+        output = ""
+        if not self.offices and not self.livingspaces:
+            print(colored("\n\nThere are no rooms in the Amity!", "red"))
+
+        for room in itertools.chain(self.offices, self.livingspaces):
+            if len(room.occupants) <= 0:
+                        print(colored("\n\n" + room.room_type + room.room_name + " has no occupants"))
+            else:
+                if room.occupants:
+                    output += ("\n\n" + room.room_name + " - " + room.room_type)
+                    output += ("\n" + "-" * 50 + "\n")
+                    for occupant in room.occupants:
+                        output += (occupant + ", ")
+
+        if filename is None:
+            print(output)
+
+        else:
+            print("Saving data to file...")
+            txt_file = open(filename + ".txt", "w+")
+            txt_file.write(output)
+            txt_file.close()
+            print("\n\nData has been successfully \
+saved to " + filename + ".txt\n")
+
+    def reallocate_person(self, person_id, new_room):
+        """
+        This method allows the facilities manager to reallocate a person \
+        to a different room.
+        """
         pass
 
     def print_unallocated(self):
         pass
 
+    def delete_person(self, person_id):
+        pass
 
-    def reallocate_person(self, person_id, new_room):
+    def remove_from_room(self):
+        pass
+
+    def delete_room(self, room_name):
         pass
 
     def save_state(self):
