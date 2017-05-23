@@ -6,6 +6,8 @@ Usage:
     docopt add_person <person_id> <person_name> <FELLOW|STAFF> [wants_accommodation]
     docopt print_room <room_name>
     docopt load_people<file_name>
+    docopt print_allocations [<file_name>]
+    reallocate_person <person_id> <new_room>
     docopt (-i | --interactive)
     docopt (-h | --help | --version)
 Options:
@@ -111,6 +113,19 @@ class AmitySpaceAllocationApp (cmd.Cmd):
         roomnames = arg["<room_name>"].split(",")
         for room_name in roomnames:
             self.amity.print_room(room_name)
+
+    @docopt_cmd
+    def do_print_allocations(self, arg):
+        """Usage: print_allocations [<file_name>]"""
+        file_name = arg["<file_name>"]
+        self.amity.print_allocations(file_name)
+
+    @docopt_cmd
+    def do_reallocate_person(self, arg):
+        """Usage: reallocate_person <person_id> <new_room>"""
+        person_id = arg["<person_id>"]
+        new_room = arg["<new_room>"].split(",")
+        self.amity.reallocate_person(person_id, new_room)
 
     @docopt_cmd
     def do_load_people(self, arg):
