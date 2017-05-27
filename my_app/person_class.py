@@ -10,6 +10,7 @@ class Person(object):
 
 
 class Fellow(Person):
+
 	"""This class inherits from the Person class
         and defines an instance of fellow
 	"""
@@ -18,7 +19,7 @@ class Fellow(Person):
 		self.person_id = person_id
 		self.name = name
 		self.person_type = "Fellow"
-		self.wants_accom = "N"
+		self.wants_accom = " "
 
 
 class Staff(Person):
