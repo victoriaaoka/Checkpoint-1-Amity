@@ -116,16 +116,28 @@ class AmitySpaceAllocationApp (cmd.Cmd):
 
     @docopt_cmd
     def do_print_allocations(self, arg):
-        """Usage: print_allocations [<file_name>]"""
-        file_name = arg["<file_name>"]
-        self.amity.print_allocations(file_name)
+        """Usage: print_allocations [<filename>]"""
+        filename = arg["<filename>"]
+        self.amity.print_allocations(filename)
+
+    @docopt_cmd
+    def do_print_unallocated(self, arg):
+        """Usage: print_unallocated [<filename>]"""
+        filename = arg["<filename>"]
+        self.amity.print_unallocated(filename)
+
+    @docopt_cmd
+    def do_allocate_unallocated(self, arg):
+        """Usage: allocate_unallocated <room_type>"""
+        room_type = arg["<room_type>"]
+        self.amity.allocate_unallocated(room_type)
 
     @docopt_cmd
     def do_reallocate_person(self, arg):
-        """Usage: reallocate_person <person_id> <new_room>"""
+        """Usage: reallocate_person <person_id> <new_room_name>"""
         person_id = arg["<person_id>"]
-        new_room = arg["<new_room>"].split(",")
-        self.amity.reallocate_person(person_id, new_room)
+        new_room_name = arg["<new_room_name>"]
+        self.amity.reallocate_person(person_id, new_room_name)
 
     @docopt_cmd
     def do_load_people(self, arg):
