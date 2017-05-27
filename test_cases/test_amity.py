@@ -62,11 +62,6 @@ class Test_amity(unittest.TestCase):
         aoka = self.amity.add_person("AND100", "Aoka Victoria", "Cook")
         self.assertEqual(aoka, "Wrong person_type! A person can only be a staff or fellow")
 
-    def test_for_add_person_without_id(self):
-        """Tests the addition of a user without an ID number."""
-        aoka = self.amity.add_person(" ", "Aoka Victoria", "Cook")
-        self.assertEqual(aoka, "Wrong person_type! A person can only be a staff or fellow")
-
     def test_print_room_successfully(self):
         """Tests output produced by print_room method."""
         room = self.amity.create_room("office", "Red")
