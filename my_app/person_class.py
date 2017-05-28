@@ -19,7 +19,7 @@ class Fellow(Person):
 		self.person_id = person_id
 		self.name = name
 		self.person_type = "Fellow"
-		self.wants_accom = " "
+		self.wants_accom = wants_accom
 
 
 class Staff(Person):
