@@ -5,8 +5,18 @@ import random
 from tabulate import tabulate
 from colorama import init
 from termcolor import colored
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy import MetaData, Column, Table
+from sqlalchemy.ext.declarative import declarative_base
+
 from .person_class import Person, Fellow, Staff
 from .room_class import Room, OfficeSpace, LivingSpace
+from db.amity_database import Base, Person, Room
+
+
+
 init()
 
 
@@ -22,6 +32,7 @@ class Amity(object):
         self.livingspaces = []
         self.office_waitinglist = []
         self.livingspace_waitinglist = []
+        self.status = False
 
     def create_room(self, room_type, room_name):
         """
@@ -109,6 +120,7 @@ class Amity(object):
             if available_offices:
                 selected_office = random.choice(available_offices)
                 selected_office.occupants.append(person)
+                self.status = True
                 print (colored("\n\n" + person.name + " has been allocated the office " +
                                selected_office.room_name + ".\n\n", "blue"))
             else:
@@ -132,6 +144,7 @@ class Amity(object):
             if available_livingspaces:
                 selected_livingspace = random.choice(available_livingspaces)
                 selected_livingspace.occupants.append(person)
+                self.status = True
                 print (colored("\n\n" + person.name + " has been allocated the livingspace " +
                                selected_livingspace.room_name + "\n\n", "blue"))
             else:
@@ -289,9 +302,12 @@ saved to " + filename + ".txt\n\n")
                            + person.name+ " " + person.person_type + " - Office\n\n")
 
             for person in self.livingspace_waitinglist:
-                output += ("\n"+ person.person_id + " "
-                           + person.name+ " " + person.person_type + " "
-                           + person.wants_accom + " - Livingspace \n\n")
+                if person.person_type.lower() == "fellow":
+                    output += ("\n"+ person.person_id + " "
+                               + person.name+ " " + person.person_type + " "
+                               + person.wants_accom + " - Livingspace \n\n")
+                else:
+                    print("error")
 
             if filename is None:
                 print(colored("\n\n" + output + "\n\n", "blue"))
@@ -309,16 +325,18 @@ saved to " + filename + ".txt\n\n")
         if room_type.lower() == "office":
             for person in self.office_waitinglist:
                 self.allocate_office()
-                new_allocations.append(person)
-                updated_office_waitinglist = list(set(self.office_waitinglist) - set(new_allocations))
-                self.office_waitinglist = updated_office_waitinglist
+                if self.status ==True:
+                    new_allocations.append(person)
+            updated_office_waitinglist = list(set(self.office_waitinglist) - set(new_allocations))
+            self.office_waitinglist = updated_office_waitinglist
             if self.office_waitinglist is None:
                 print(colored("\n\nThere are no unallocted people.\n\n","yellow"))
 
         elif room_type.lower() == "livingspace":
             for person in self.livingspace_waitinglist:
                 self.allocate_livingspace()
-                new_allocations.append(person)
+                if self.status ==True:
+                    new_allocations.append(person)
                 updated_livingspace_waitinglist = list(set(self.livingspace_waitinglist) - set(new_allocations))
                 self.livingspace_waitinglist = updated_livingspace_waitinglist
             if self.livingspace_waitinglist is None:
@@ -339,8 +357,37 @@ saved to " + filename + ".txt\n\n")
     def delete_room(self, room_name):
         pass
 
-    def save_state(self):
-        pass
+    def save_state(self, db_name='amity_database.db'):
+        if db_name:
+            engine = create_engine("sqlite:///{}".format(db_name))
+        else:
+            engine=create_engine("sqlite:///amity_database.db")
+
+        Base.metadata.create_all(engine)
+        Session = sessionmaker(bind=engine)
+        session = Session()
+        all_rooms = self.offices + self.livingspaces
+
+        for person in self.people:
+            room_allocated = ""
+            for room in all_rooms:
+                if person in room.occupants:
+                    room_allocated += room.room_name
+            person = Person(id=person.person_id, names=person.name, person_type=person.person_type, wants_accommodation=person.wants_accom, room_allocated=room_allocated)
+            session.add(person)
+            session.commit()
+
+        for room in all_rooms:
+            room_occupants = ""
+            for occupant in room.occupants:
+                room_occupants += (occupant.name) + " "
+            room = Room(id=None, room_name=room.room_name,
+                        room_type=room.room_type, occupants=room_occupants)
+            session.add(room)
+            session.commit()
+        session.close()
+        print ('Data saved successfully to the database')
+
 
     def load_state(self):
         pass
