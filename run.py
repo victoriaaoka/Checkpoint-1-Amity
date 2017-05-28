@@ -16,6 +16,7 @@ Options:
 """
 
 import sys
+import os
 import cmd
 from docopt import docopt, DocoptExit
 from my_app.amity_class import Amity
@@ -115,6 +116,12 @@ class AmitySpaceAllocationApp (cmd.Cmd):
             self.amity.print_room(room_name)
 
     @docopt_cmd
+    def do_load_people(self, arg):
+        """Usage: load_people <file_name>"""
+        file_name = arg["<file_name>"]
+        self.amity.load_people(file_name)
+
+    @docopt_cmd
     def do_print_allocations(self, arg):
         """Usage: print_allocations [<filename>]"""
         filename = arg["<filename>"]
@@ -140,10 +147,25 @@ class AmitySpaceAllocationApp (cmd.Cmd):
         self.amity.reallocate_person(person_id, new_room_name)
 
     @docopt_cmd
-    def do_load_people(self, arg):
-        """Usage: load_people <file_name>"""
-        file_name = arg["<file_name>"]
-        self.amity.load_people(file_name)
+    def do_save_state(self, args):
+        """
+        Usage: save_state <db_name>
+        """
+        db_name = args["<db_name>"]
+        self.amity.save_state(db_name)
+
+    @docopt_cmd
+    def do_load_state(self, args):
+        """
+        Usage: load_state <db_name>
+        """
+        db_name = args['<db_name>']
+        self.amity.load_state(db_name)
+
+    def do_clear(self, arg):
+        """Clears screen"""
+
+        os.system("clear")
 
 
     def do_quit(self, arg):
