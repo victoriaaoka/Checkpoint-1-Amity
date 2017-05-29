@@ -72,12 +72,12 @@ class Amity(object):
                                    " has been successfully created\n\n", "blue"))
                     return new_livingspace
 
-    def add_person(self, person_id, name, person_type, wants_accom="N"):
+    def add_person(self, person_id, person_name, person_type, wants_accom="N"):
         """
         This method adds a new fellow or staff into the system.
         It also calls the allocate_livingspace and allocate_office method to assign the new staff and fellow rooms.
         """
-        if not isinstance(person_id, str) or not isinstance(name, str) or not isinstance(person_type, str):
+        if not isinstance(person_id, str) or not isinstance(person_name, str) or not isinstance(person_type, str):
             raise TypeError("\n\nUse input type of string only\n\n")
             return "Use input type of string only"
 
@@ -85,18 +85,18 @@ class Amity(object):
             print(colored("\n\nPerson id: " + person_id + " already exists.\n\n", "red"))
 
         elif person_type.lower() == "fellow":
-            new_person = Fellow(person_id, name, person_type, wants_accom)
+            new_person = Fellow(person_id, person_name, person_type, wants_accom)
             self.people.append(new_person)
-            print(colored("\n\nFellow " + name + " has been successfully added.\n\n", "blue"))
+            print(colored("\n\nFellow " + person_name + " has been successfully added.\n\n", "blue"))
             self.allocate_office()
             if wants_accom.lower() == "y":
                 self.allocate_livingspace()
             return "Added successfully"
 
         elif person_type.lower() == "staff":
-            new_person = Staff(person_id, name, person_type)
+            new_person = Staff(person_id, person_name, person_type, wants_accom="N")
             self.people.append(new_person)
-            print (colored("\n\nStaff " + name + "  has been successfully added.\n\n", "blue"))
+            print (colored("\n\nStaff " + person_name + "  has been successfully added.\n\n", "blue"))
             self.allocate_office()
             return "Added successfully"
         else:
@@ -121,7 +121,7 @@ class Amity(object):
                 selected_office = random.choice(available_offices)
                 selected_office.occupants.append(person)
                 self.status = True
-                print (colored("\n\n" + person.name + " has been allocated the office " +
+                print (colored("\n\n" + person.person_name + " has been allocated the office " +
                                selected_office.room_name + ".\n\n", "blue"))
             else:
                 self.office_waitinglist.append(person)
@@ -145,7 +145,7 @@ class Amity(object):
                 selected_livingspace = random.choice(available_livingspaces)
                 selected_livingspace.occupants.append(person)
                 self.status = True
-                print (colored("\n\n" + person.name + " has been allocated the livingspace " +
+                print (colored("\n\n" + person.person_name + " has been allocated the livingspace " +
                                selected_livingspace.room_name + "\n\n", "blue"))
             else:
                 self.livingspace_waitinglist.append(person)
@@ -168,7 +168,7 @@ class Amity(object):
                     else:
                         names = []
                         for occupant in room.occupants:
-                            names.append(occupant.name)
+                            names.append(occupant.person_name)
                         table = enumerate(names, start=1)
                         print ("\n\n" + tabulate(table, headers=[room.room_name + " |  \
 " + room.room_type], tablefmt="fancy_grid"))
@@ -197,13 +197,13 @@ class Amity(object):
                     else:
                         try:
                             person_id = read_line[0]
-                            name = read_line[1] + " " + read_line[2]
+                            person_name = read_line[1] + " " + read_line[2]
                             person_type = read_line[3]
                             wants_accom = read_line[4]
                         except IndexError:
                             wants_accom = "N"
 
-                        self.add_person(person_id, name,
+                        self.add_person(person_id, person_name,
                                         person_type, wants_accom=wants_accom)
 
             print(colored("\n\nData loaded successfully!\n\n", "green"))
@@ -228,7 +228,7 @@ class Amity(object):
                                " - " + room.room_type)
                     output += ("\n" + "-" * 50 + "\n")
                     for occupant in room.occupants:
-                        output += (occupant.name+ ", ")
+                        output += (occupant.person_name+ ", ")
 
         if filename is None:
             print(colored(output, "blue"))
@@ -275,7 +275,7 @@ saved to " + filename + ".txt\n\n")
                 if new_room.room_type == current_room.room_type:
                     new_room.occupants.append(reallocating_person)
                     current_room.occupants.remove(reallocating_person)
-                    print(colored("\n\n" + reallocating_person.name + " successfully reallocated to " + new_room.room_type
+                    print(colored("\n\n" + reallocating_person.person_name + " successfully reallocated to " + new_room.room_type
                         + " " + new_room.room_name + "\n\n", "green"))
                     return"Successfully reallocated!"
 
@@ -299,12 +299,12 @@ saved to " + filename + ".txt\n\n")
                 + "-" * 40 + "\n")
             for person in self.office_waitinglist:
                 output += ( "\n"+ person.person_id + " "
-                           + person.name+ " " + person.person_type + " - Office\n\n")
+                           + person.person_name+ " " + person.person_type + " - Office\n\n")
 
             for person in self.livingspace_waitinglist:
                 if person.person_type.lower() == "fellow":
                     output += ("\n"+ person.person_id + " "
-                               + person.name+ " " + person.person_type + " "
+                               + person.person_name+ " " + person.person_type + " "
                                + person.wants_accom + " - Livingspace \n\n")
                 else:
                     print("error")
@@ -358,6 +358,9 @@ saved to " + filename + ".txt\n\n")
         pass
 
     def save_state(self, db_name='amity_database.db'):
+        """
+        This method persists all the data stored in the app to a SQLite database.
+        """
         if db_name:
             engine = create_engine("sqlite:///{}".format(db_name))
         else:
@@ -373,21 +376,45 @@ saved to " + filename + ".txt\n\n")
             for room in all_rooms:
                 if person in room.occupants:
                     room_allocated += room.room_name
-            person = Person(id=person.person_id, names=person.name, person_type=person.person_type, wants_accommodation=person.wants_accom, room_allocated=room_allocated)
+            person = Person(id=None, person_id=person.person_id, person_name=person.person_name, person_type=person.person_type, wants_accommodation=person.wants_accom, room_allocated=room_allocated)
             session.add(person)
             session.commit()
 
         for room in all_rooms:
             room_occupants = ""
             for occupant in room.occupants:
-                room_occupants += (occupant.name) + " "
+                room_occupants += (occupant.person_name) + " "
             room = Room(id=None, room_name=room.room_name,
                         room_type=room.room_type, occupants=room_occupants)
             session.add(room)
             session.commit()
         session.close()
-        print ('Data saved successfully to the database')
+        print("Data saved successfully!")
 
 
-    def load_state(self):
-        pass
+    def load_state(self, db_name):
+        """
+        This method loads data from the database into the application.
+        """
+        engine = create_engine("sqlite:///{}".format(db_name))
+        Base.metadata.create_all(engine)
+        Session = sessionmaker(bind=engine)
+        session = Session()
+
+        for person_id, person_name, person_type, wants_accommodation, room_allocated in session.query(Person.person_id, Person.person_name, Person.person_type, Person.wants_accommodation, Person.room_allocated):
+            if person_type.lower == "fellow":
+                person = Fellow(person_id, person_name, person_type, wants_accom)
+                self.people.append(person)
+
+            elif person_type.lower() == "staff":
+                person = Staff(person_id, person_name, person_type, wants_accom)
+                self.people.append(person)
+
+        for room_type, room_name, occupants in session.query(Room.room_type, Room.room_name, Room.occupants):
+            if room_type.lower() == "office":
+                room = OfficeSpace(room_type, room_name)
+                self.offices.append(room)
+            else:
+                room = LivingSpace(room_type, room_name)
+                self.livingspaces.append(room)
+        print ("Data loaded succesfully!")
