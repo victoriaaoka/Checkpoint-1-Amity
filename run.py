@@ -85,7 +85,7 @@ class AmitySpaceAllocationApp (cmd.Cmd):
         """Usage: add_person <person_id> <first_name> <last_name> (FELLOW|STAFF) [<wants_accom>]"""
 
         person_id = arg["<person_id>"]
-        name = arg["<first_name>"]+" "+arg["<last_name>"]
+        person_name = arg["<first_name>"]+" "+arg["<last_name>"]
         person_type = ""
         staff = arg["STAFF"]
         fellow = arg["FELLOW"]
@@ -105,7 +105,7 @@ class AmitySpaceAllocationApp (cmd.Cmd):
         elif person_type.lower() == "staff" and wants_accom.lower()== "y":
             print (colored( "\n\nStaff cannot be allocated accomodation space\n\n","red"))
 
-        self.amity.add_person(person_id, name, person_type, wants_accom)
+        self.amity.add_person(person_id, person_name, person_type, wants_accom)
 
     @docopt_cmd
     def do_print_room(self, arg):
