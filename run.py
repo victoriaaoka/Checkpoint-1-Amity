@@ -144,6 +144,12 @@ class AmitySpaceAllocationApp (cmd.Cmd):
         person_id = arg["<person_id>"]
         new_room_name = arg["<new_room_name>"]
         self.amity.reallocate_person(person_id, new_room_name)
+    @docopt_cmd
+    def do_disallocate_person(self, arg):
+        """Usage: disallocate_person <person_id>"""
+        person_ids = arg["<person_id>"].split(",")
+        for person_id in person_ids:
+            self.amity.disallocate_person(person_id)
 
     @docopt_cmd
     def do_delete_person(self, arg):
