@@ -5,21 +5,21 @@ from sqlalchemy import Column, Integer, String
 Base = declarative_base()
 
 
-class Person(Base):
+class PersonDb(Base):
     __tablename__ = "People"
-    id = Column(Integer, autoincrement=True)
-    person_id = Column(String, primary_key= True)
+    id = Column(Integer, primary_key= True, autoincrement=True)
+    person_id = Column(String)
     person_name = Column(String)
     person_type = Column(String)
     wants_accommodation = Column(String)
     room_allocated = Column(String)
 
 
-class Room(Base):
+class RoomDb(Base):
     __tablename__ = "Rooms"
     id = Column(Integer, primary_key= True, autoincrement=True)
-    room_name = Column(String)
     room_type = Column(String)
+    room_name = Column(String)
     occupants = Column(String)
 
 
