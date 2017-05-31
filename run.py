@@ -110,7 +110,6 @@ class AmitySpaceAllocationApp (cmd.Cmd):
     @docopt_cmd
     def do_print_room(self, arg):
         """Usage: print_room <room_name>"""
-        room_name = arg["<room_name>"]
         roomnames = arg["<room_name>"].split(",")
         for room_name in roomnames:
             self.amity.print_room(room_name)
@@ -145,6 +144,20 @@ class AmitySpaceAllocationApp (cmd.Cmd):
         person_id = arg["<person_id>"]
         new_room_name = arg["<new_room_name>"]
         self.amity.reallocate_person(person_id, new_room_name)
+
+    @docopt_cmd
+    def do_delete_person(self, arg):
+        """Usage: delete_person <person_id>"""
+        person_ids = arg["<person_id>"].split(",")
+        for person_id in person_ids:
+            self.amity.delete_person(person_id)
+
+    @docopt_cmd
+    def do_delete_room(self, arg):
+        """Usage: delete_room <room_name>"""
+        roomnames = arg["<room_name>"].split(",")
+        for room_name in roomnames:
+            self.amity.delete_room(room_name)
 
     @docopt_cmd
     def do_save_state(self, args):
