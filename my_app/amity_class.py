@@ -13,7 +13,7 @@ from sqlalchemy.ext.declarative import declarative_base
 
 from .person_class import Person, Fellow, Staff
 from .room_class import Room, OfficeSpace, LivingSpace
-from db.amity_database import Base, Person, Room
+from db.amity_database import Base, PersonDb, RoomDb
 
 
 
@@ -125,7 +125,7 @@ class Amity(object):
                                selected_office.room_name + ".\n\n", "blue"))
             else:
                 self.office_waitinglist.append(person)
-                print (colored("\n\nThere are no available offices! Added to waiting List.\n\n", "red"))
+                print(colored("\n\nThere are no available offices! Added to waiting List.\n\n", "red"))
 
     def allocate_livingspace(self):
         """"
@@ -216,12 +216,12 @@ class Amity(object):
         """
         output = ""
         if not self.offices and not self.livingspaces:
-            print(colored("\n\nThere are no rooms in the Amity!\n\n", "red"))
+            print(colored("\n\nThere are no rooms in the Amity!", "red"))
 
         for room in itertools.chain(self.offices, self.livingspaces):
             if len(room.occupants) <= 0:
                 print(colored("\n\n" + room.room_type + " " +
-                              room.room_name + " has no occupants\n\n", "yellow"))
+                              room.room_name + " has no occupants", "yellow"))
             else:
                 if room.occupants:
                     output += ("\n\n" + room.room_name +
@@ -346,16 +346,48 @@ saved to " + filename + ".txt\n\n")
 
 
     def delete_person(self, person_id):
-        pass
+        all_rooms = self.offices + self.livingspaces
 
-    def print_available_rooms(self):
-        pass
+        try:
+            person_to_delete = [person for person in self.people if person.person_id.lower() == person_id.lower()][0]
+            self.people.remove(person_to_delete)
+            for room in itertools.chain(self.offices, self.livingspaces):
+                if person_to_delete in room.occupants:
+                    room.occupants.remove(person_to_delete)
 
-    def disallocate_person(self, person_id, room):
-        pass
+            for person in itertools.chain(self.office_waitinglist, self.livingspace_waitinglist):
+                if person == person_to_delete:
+                    if person in self.office_waitinglist:
+                        self.office_waitinglist.remove(person)
+                    else:
+                        self.livingspace_waitinglist.remove(person)
+            print(colored("\n\nPerson deleted successfully!\n\n","green"))
+
+        except IndexError:
+            print(colored("\n\nThe person does not exist.\n\n", "red"))
+            return "The person does not exist."
 
     def delete_room(self, room_name):
-        pass
+        try:
+            room_to_delete = [room for room in itertools.chain(self.offices, self.livingspaces) if room.room_name.lower() == room_name.lower()][0]
+            for room in itertools.chain(self.offices, self.livingspaces):
+                if room == room_to_delete:
+                    if room in self.offices:
+                        if len(room.occupants) > 0:
+                            for occupant in room.occupants:
+                                self.office_waitinglist.append(occupant)
+                                room.occupants.remove(occupant)
+                        self.offices.remove(room)
+                    else:
+                        if len(room.occupants) > 0:
+                            for occupant in room.occupants:
+                                self.livingspace_waitinglist.append(occupant)
+                                room.occupants.remove(occupant)
+                        self.livingspaces.remove(room)
+            print(colored("Room deleted successfully!", "green"))
+        except IndexError:
+            print(colored("\n\nThe room does not exist.\n\n", "red"))
+            return "The room does not exist."
 
     def save_state(self, db_name='amity_database.db'):
         """
@@ -372,19 +404,20 @@ saved to " + filename + ".txt\n\n")
         all_rooms = self.offices + self.livingspaces
 
         for person in self.people:
-            room_allocated = ""
+            room_allocated = []
             for room in all_rooms:
                 if person in room.occupants:
-                    room_allocated += room.room_name
-            person = Person(id=None, person_id=person.person_id, person_name=person.person_name, person_type=person.person_type, wants_accommodation=person.wants_accom, room_allocated=room_allocated)
+                    room_allocated.append(room.room_name)
+            room_allocated =  " ".join(room_allocated)
+            person = PersonDb(id = None, person_id=person.person_id, person_name=person.person_name, person_type=person.person_type, wants_accommodation=person.wants_accom, room_allocated=room_allocated)
             session.add(person)
             session.commit()
 
         for room in all_rooms:
             room_occupants = ""
             for occupant in room.occupants:
-                room_occupants += (occupant.person_name) + " "
-            room = Room(id=None, room_name=room.room_name,
+                room_occupants = occupant
+            room = RoomDb(id=None, room_name=room.room_name,
                         room_type=room.room_type, occupants=room_occupants)
             session.add(room)
             session.commit()
@@ -401,20 +434,23 @@ saved to " + filename + ".txt\n\n")
         Session = sessionmaker(bind=engine)
         session = Session()
 
-        for person_id, person_name, person_type, wants_accommodation, room_allocated in session.query(Person.person_id, Person.person_name, Person.person_type, Person.wants_accommodation, Person.room_allocated):
-            if person_type.lower == "fellow":
-                person = Fellow(person_id, person_name, person_type, wants_accom)
+        for p_record in  session.query(PersonDb):
+            if p_record.person_type.lower() == "fellow":
+                person = Fellow(p_record.person_id, p_record.person_name, p_record.person_type, p_record.wants_accommodation)
                 self.people.append(person)
 
-            elif person_type.lower() == "staff":
-                person = Staff(person_id, person_name, person_type, wants_accom)
+            elif p_record.person_type.lower() == "staff":
+                person = Staff(p_record.person_id, p_record.person_name, p_record.person_type, p_record.wants_accommodation)
                 self.people.append(person)
 
-        for room_type, room_name, occupants in session.query(Room.room_type, Room.room_name, Room.occupants):
-            if room_type.lower() == "office":
-                room = OfficeSpace(room_type, room_name)
+
+        for r_record in session.query(RoomDb):
+            if r_record.room_type.lower() == "office":
+                room = OfficeSpace(r_record.room_type, r_record.room_name, r_record.occupants)
+                print(r_record.occupants)
                 self.offices.append(room)
+
             else:
-                room = LivingSpace(room_type, room_name)
+                room = LivingSpace(r_record.room_type, r_record.room_name, r_record.occupants)
                 self.livingspaces.append(room)
         print ("Data loaded succesfully!")
