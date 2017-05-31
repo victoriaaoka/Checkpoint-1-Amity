@@ -344,6 +344,24 @@ saved to " + filename + ".txt\n\n")
 
         else: print(colored("\n\nerror occured\n\n", "red"))
 
+    def disallocate_person(self, person_id):
+
+        try:
+            person_to_disallocate = [person for person in self.people if person.person_id.lower() == person_id.lower()][0]
+            for room in itertools.chain(self.offices, self.livingspaces):
+                if person_to_disallocate in room.occupants:
+                    if room.room_type == "office":
+                        self.office_waitinglist.append(person_to_disallocate)
+                        room.occupants.remove(person_to_disallocate)
+                    else:
+                        self.livingspace_waitinglist.append(person_to_disallocate)
+                        room.occupants.remove(person_to_disallocate)
+            print(colored("\n\nPerson disallocated successfully!\n\n","green"))
+
+        except IndexError:
+            print(colored("\n\nThe person is not assigned any room.\n\n", "red"))
+            return "The person is not assigned any room."
+
 
     def delete_person(self, person_id):
         all_rooms = self.offices + self.livingspaces
@@ -416,7 +434,7 @@ saved to " + filename + ".txt\n\n")
         for room in all_rooms:
             room_occupants = ""
             for occupant in room.occupants:
-                room_occupants = occupant
+                room_occupants += occupant.person_name
             room = RoomDb(id=None, room_name=room.room_name,
                         room_type=room.room_type, occupants=room_occupants)
             session.add(room)
@@ -447,7 +465,6 @@ saved to " + filename + ".txt\n\n")
         for r_record in session.query(RoomDb):
             if r_record.room_type.lower() == "office":
                 room = OfficeSpace(r_record.room_type, r_record.room_name, r_record.occupants)
-                print(r_record.occupants)
                 self.offices.append(room)
 
             else:
