@@ -133,10 +133,18 @@ class AmitySpaceAllocationApp (cmd.Cmd):
         self.amity.print_unallocated(filename)
 
     @docopt_cmd
-    def do_allocate_unallocated(self, arg):
-        """Usage: allocate_unallocated <room_type>"""
-        room_type = arg["<room_type>"]
-        self.amity.allocate_unallocated(room_type)
+    def do_allocate_unallocated_office(self, arg):
+        """Usage: allocate_unallocated_office <person_id>"""
+        person_ids = arg["<person_id>"].split(",")
+        for person_id in person_ids:
+            self.amity.allocate_unallocated_office(person_id)
+
+    @docopt_cmd
+    def do_allocate_unallocated_livingspace(self, arg):
+        """Usage: allocate_unallocated_livingspace <person_id>"""
+        person_ids = arg["<person_id>"].split(",")
+        for person_id in person_ids:
+            self.amity.allocate_unallocated_livingspace(person_id)
 
     @docopt_cmd
     def do_reallocate_person(self, arg):
@@ -166,7 +174,7 @@ class AmitySpaceAllocationApp (cmd.Cmd):
             self.amity.delete_room(room_name)
 
     @docopt_cmd
-    def do_save_state(self, args):
+    def do_save_state(self, arg):
         """
         Usage: save_state <db_name>
         """
@@ -174,7 +182,7 @@ class AmitySpaceAllocationApp (cmd.Cmd):
         self.amity.save_state(db_name)
 
     @docopt_cmd
-    def do_load_state(self, args):
+    def do_load_state(self, arg):
         """
         Usage: load_state <db_name>
         """
