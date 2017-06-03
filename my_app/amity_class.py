@@ -33,9 +33,15 @@ class Amity(object):
         This method creates rooms based on a user's input.
         Rooms can either be an office or a living space.
         """
+        if not room_name.isalpha():
+            print(colored("room names must be alphabetical characters"))
+
         if not isinstance(room_type, str) or not isinstance(room_name, str):
             raise TypeError(
                 colored("\nUse input of type string only!\n", "red"))
+
+        if not room_name.isalpha():
+            print(colored("\nRoom names must be of type string only!\n", "red"))
 
         elif room_type.lower() != "office" and room_type.lower() != "livingspace":
             print(colored(
@@ -47,7 +53,7 @@ class Amity(object):
             if room_type.lower() == "office":
                 new_office = OfficeSpace(room_type, room_name)
                 if new_office.room_name.lower() in [room.room_name.lower()
-                for room in itertools.chain(self.offices, self.livingspaces)]:
+                                                    for room in itertools.chain(self.offices, self.livingspaces)]:
                     print (colored("\nThe room name " +
                                    room_name + " already exists!\n", "red"))
                 else:
@@ -59,7 +65,7 @@ created!\n".format(room_name), "blue"))
             elif room_type.lower() == "livingspace":
                 new_livingspace = LivingSpace(room_type, room_name)
                 if new_livingspace.room_name.lower() in [room.room_name.lower()
-                for room in itertools.chain(self.offices, self.livingspaces)]:
+                                                         for room in itertools.chain(self.offices, self.livingspaces)]:
                     print (colored("\nThe room name " +
                                    room_name + " already exists!\n", "red"))
                 else:
@@ -74,33 +80,41 @@ created!\n".format(room_name), "blue"))
         It also calls the allocate_livingspace and allocate_office method to
         assign the new staff and fellow rooms.
         """
-        if not isinstance(person_id, str)\
-        or not isinstance(person_name, str)\
-        or not isinstance(person_type, str):
-            raise TypeError("\nUse input type of string only\n")
-            return "Use input type of string only"
+        names = person_name.split(" ")
+        for name in names:
+            if not name.isalpha():
+                print(colored("\nPerson names must be of type string only!\n", "red"))
 
-        elif person_id.lower() in [person.person_id.lower() for person in self.people]:
-            print(colored("\nPerson id: " + person_id + " already exists.\n", "red"))
+            elif not person_id.isdigit():
+                print("Person_id can only be number!")
 
-        elif person_type.lower() == "fellow":
-            new_person = Fellow(person_id, person_name, person_type, wants_accom)
-            self.people.append(new_person)
-            print(colored("\nFellow " + person_name + " has been successfully added.\n", "blue"))
-            self.allocate_office()
-            if wants_accom.lower() == "y":
-                self.allocate_livingspace()
-            return "Added successfully"
+            else:
+                if person_id.lower() in [person.person_id.lower() for person in self.people]:
+                    print(colored("\nPerson id: " + person_id + " already exists.\n", "red"))
 
-        elif person_type.lower() == "staff":
-            new_person = Staff(person_id, person_name, person_type, wants_accom="N")
-            self.people.append(new_person)
-            print (colored("\nStaff " + person_name + "  has been successfully added.\n", "blue"))
-            self.allocate_office()
-            return "Added successfully"
-        else:
-            print (colored("\nWrong person_type! A person can only be a staff or fellow\n", "red"))
-            return "Wrong person_type! A person can only be a staff or fellow"
+                elif person_type.lower() == "fellow":
+                    new_person = Fellow(person_id, person_name,
+                                        person_type, wants_accom)
+                    self.people.append(new_person)
+                    print(colored("\nFellow " + person_name +
+                                  " has been successfully added.\n", "blue"))
+                    self.allocate_office()
+                    if wants_accom.lower() == "y":
+                        self.allocate_livingspace()
+                    return "Added successfully"
+
+                elif person_type.lower() == "staff":
+                    new_person = Staff(person_id, person_name,
+                                       person_type, wants_accom="N")
+                    self.people.append(new_person)
+                    print (colored("\nStaff " + person_name +
+                                   "  has been successfully added.\n", "blue"))
+                    self.allocate_office()
+                    return "Added successfully"
+                else:
+                    print(
+                        colored("\nWrong person_type! A person can only be a staff or fellow\n", "red"))
+                    return "Wrong person_type! A person can only be a staff or fellow"
 
     def allocate_office(self):
         """
@@ -109,7 +123,8 @@ created!\n".format(room_name), "blue"))
         person = self.people[-1]
         if len(self.offices) == 0:
             self.office_waitinglist.append(person)
-            print (colored("\nThere are no offices created yet! Added to waiting list \n", "red"))
+            print (
+                colored("\nThere are no offices created yet! Added to waiting list \n", "red"))
         elif len(self.offices) > 0:
             available_offices = []
             full_offices = []
@@ -124,7 +139,8 @@ created!\n".format(room_name), "blue"))
                                selected_office.room_name + ".\n", "blue"))
             else:
                 self.office_waitinglist.append(person)
-                print(colored("\nThere are no available offices! Added to waiting List.\n", "red"))
+                print(
+                    colored("\nThere are no available offices! Added to waiting List.\n", "red"))
 
     def allocate_livingspace(self):
         """"
@@ -133,7 +149,8 @@ created!\n".format(room_name), "blue"))
         person = self.people[-1]
         if len(self.livingspaces) == 0:
             self.livingspace_waitinglist.append(person)
-            print (colored("\nThere are no living spaces created yet! Added to waiting list.\n", "red"))
+            print (colored(
+                "\nThere are no living spaces created yet! Added to waiting list.\n", "red"))
         elif len(self.livingspaces) > 0:
             available_livingspaces = []
             full_livingspaces = []
@@ -148,7 +165,8 @@ created!\n".format(room_name), "blue"))
                                selected_livingspace.room_name + "\n", "blue"))
             else:
                 self.livingspace_waitinglist.append(person)
-                print (colored("\nThere are no available living spaces! Added to waiting List\n", "red"))
+                print (colored(
+                    "\nThere are no available living spaces! Added to waiting List\n", "red"))
 
     def print_room(self, room_name):
         """
@@ -227,7 +245,8 @@ created!\n".format(room_name), "blue"))
                                " - " + room.room_type)
                     output += ("\n" + "-" * 50 + "\n")
                     for occupant in room.occupants:
-                        output += (occupant.person_id + " - " + occupant.person_name+ ", ")
+                        output += (occupant.person_id + " - " +
+                                   occupant.person_name + ", ")
 
         if filename is None:
             print(colored(output, "blue"))
@@ -249,14 +268,14 @@ saved to " + filename + ".txt\n")
         all_rooms = self.livingspaces + self.offices
         try:
             reallocating_person = [person for person in self.people
-            if person.person_id.lower() == person_id.lower()][0]
+                                   if person.person_id.lower() == person_id.lower()][0]
         except IndexError:
             print(colored("\nThe person does not exist.\n", "red"))
             return "The person does not exist."
 
         try:
             new_room = [room for room in all_rooms
-            if room.room_name.lower() == new_room_name.lower()][0]
+                        if room.room_name.lower() == new_room_name.lower()][0]
         except IndexError:
             print(colored("\nThe room does not exist.\n", "red"))
             return "The room does not exist."
@@ -271,14 +290,14 @@ Reallocation can not be to same room.\n", "red"))
         else:
             try:
                 current_room = [room for room in all_rooms
-                if reallocating_person in room.occupants and
-                new_room.room_type == room.room_type][0]
+                                if reallocating_person in room.occupants and
+                                new_room.room_type == room.room_type][0]
                 if new_room.room_type == current_room.room_type:
                     new_room.occupants.append(reallocating_person)
                     current_room.occupants.remove(reallocating_person)
                     print(colored("\n" + reallocating_person.person_name
-                        + " successfully reallocated to " + new_room.room_type
-                        + " " + new_room.room_name + "\n", "green"))
+                                  + " successfully reallocated to " + new_room.room_type
+                                  + " " + new_room.room_name + "\n", "green"))
                     return"Successfully reallocated!"
 
                 else:
@@ -286,12 +305,12 @@ Reallocation can not be to same room.\n", "red"))
 or livingspace - livingspace.\n", "red"))
             except IndexError:
                 if reallocating_person.person_type.lower() == "staff" \
-                and new_room.room_type.lower() == "livingspace":
-                    print(colored("\nStaff cannot be reallocated to a living space!\n", "red"))
+                        and new_room.room_type.lower() == "livingspace":
+                    print(
+                        colored("\nStaff cannot be reallocated to a living space!\n", "red"))
                 else:
                     print(colored("\nThe person does not have any room currently. \
 Please use allocate_unallocted.\n", "yellow"))
-
 
     def print_unallocated(self, filename=None):
         output = ""
@@ -301,16 +320,16 @@ Please use allocate_unallocted.\n", "yellow"))
 moment.\n", "yellow"))
             return "There are no unallocated Fellows or Staff at the moment."
         else:
-            output = ("\n List Of Unallocated Fellows AND Staff\n"\
-                + "-" * 40 + "\n")
+            output = ("\n List Of Unallocated Fellows AND Staff\n"
+                      + "-" * 40 + "\n")
             for person in self.office_waitinglist:
-                output += ( "\n"+ person.person_id + " "
-                           + person.person_name+ " " + person.person_type + " - Office\n")
+                output += ("\n" + person.person_id + " "
+                           + person.person_name + " " + person.person_type + " - Office\n")
 
             for person in self.livingspace_waitinglist:
                 if person.person_type.lower() == "fellow":
-                    output += ("\n"+ person.person_id + " "
-                               + person.person_name+ " " + person.person_type + " "
+                    output += ("\n" + person.person_id + " "
+                               + person.person_name + " " + person.person_type + " "
                                + person.wants_accom + " - Livingspace \n")
                 else:
                     print("error")
@@ -323,88 +342,91 @@ moment.\n", "yellow"))
                 txt_file.write(output)
                 txt_file.close()
                 print(colored("\nUnallocations successfully saved to "
-+ filename + ".txt\n", "green"))
+                              + filename + ".txt\n", "green"))
                 return "Unallocations successfully saved"
 
     def allocate_unallocated_office(self, person_id):
-            try:
-                available_office = [room for room in self.offices
-                if len(room.occupants) < room.capacity][0]
-                if self.office_waitinglist:
-                    try:
-                        person = [person for person in self.office_waitinglist
-                        if person.person_id.lower() == person_id.lower()][0]
-                        available_office.occupants.append(person)
-                        self.office_waitinglist.remove(person)
-                        print(colored("\n" + person.person_name + " moved from waiting list to office "
-                            + available_office.room_name+ "\n", "green"))
-                    except IndexError:
-                        print(colored("The person is not in the office_waitinglist.\n", "yellow"))
+        try:
+            available_office = [room for room in self.offices
+                                if len(room.occupants) < room.capacity][0]
+            if self.office_waitinglist:
+                try:
+                    person = [person for person in self.office_waitinglist
+                              if person.person_id.lower() == person_id.lower()][0]
+                    available_office.occupants.append(person)
+                    self.office_waitinglist.remove(person)
+                    print(colored("\n" + person.person_name + " moved from waiting list to office "
+                                  + available_office.room_name + "\n", "green"))
+                except IndexError:
+                    print(
+                        colored("The person is not in the office_waitinglist.\n", "yellow"))
 
-
-                else:
-                    print(colored("\nThere are no people in the office_waitinglist\n","yellow"))
-            except IndexError:
-                print(colored("\nThere are no available offices.\n", "yellow"))
+            else:
+                print(
+                    colored("\nThere are no people in the office_waitinglist\n", "yellow"))
+        except IndexError:
+            print(colored("\nThere are no available offices.\n", "yellow"))
 
     def allocate_unallocated_livingspace(self, person_id):
-            try:
-                available_livingspace = [room for room in self.livingspaces
-                if len(room.occupants) < room.capacity][0]
-                if self.livingspace_waitinglist:
-                    try:
-                        person = [person for person in self.livingspace_waitinglist
-                        if person.person_id.lower() == person_id.lower()][0]
-                        available_livingspace.occupants.append(person)
-                        self.livingspace_waitinglist.remove(person)
-                        print(colored("\n" + person.person_name + " moved from waiting list to livingspace "
-                            + available_livingspace.room_name+ "\n", "green"))
-                    except IndexError:
-                        print(colored("The person is not in the livingspace_waitinglist.\n", "yellow"))
-                else:
-                    print(colored("\nThere are no people in the livingspace_waitinglist\n","yellow"))
-            except IndexError:
-                print(colored("\nThere are no available livingspaces.\n", "yellow"))
+        try:
+            available_livingspace = [room for room in self.livingspaces
+                                     if len(room.occupants) < room.capacity][0]
+            if self.livingspace_waitinglist:
+                try:
+                    person = [person for person in self.livingspace_waitinglist
+                              if person.person_id.lower() == person_id.lower()][0]
+                    available_livingspace.occupants.append(person)
+                    self.livingspace_waitinglist.remove(person)
+                    print(colored("\n" + person.person_name + " moved from waiting list to livingspace "
+                                  + available_livingspace.room_name + "\n", "green"))
+                except IndexError:
+                    print(
+                        colored("The person is not in the livingspace_waitinglist.\n", "yellow"))
+            else:
+                print(
+                    colored("\nThere are no people in the livingspace_waitinglist\n", "yellow"))
+        except IndexError:
+            print(colored("\nThere are no available livingspaces.\n", "yellow"))
 
     def disallocate_person(self, person_id):
 
         try:
             person_to_disallocate = [person for person in self.people
-            if person.person_id.lower() == person_id.lower()][0]
+                                     if person.person_id.lower() == person_id.lower()][0]
             for room in itertools.chain(self.offices, self.livingspaces):
                 if person_to_disallocate in room.occupants:
                     if room.room_type == "office":
                         self.office_waitinglist.append(person_to_disallocate)
                         room.occupants.remove(person_to_disallocate)
                     else:
-                        self.livingspace_waitinglist.append(person_to_disallocate)
+                        self.livingspace_waitinglist.append(
+                            person_to_disallocate)
                         room.occupants.remove(person_to_disallocate)
-            print(colored("\nPerson disallocated successfully!\n","green"))
+            print(colored("\nPerson disallocated successfully!\n", "green"))
 
         except IndexError:
             print(colored("\nThe person is not assigned any room.\n", "red"))
             return "The person is not assigned any room."
-
 
     def delete_person(self, person_id):
         all_rooms = self.offices + self.livingspaces
 
         try:
             person_to_delete = [person for person in self.people
-            if person.person_id.lower() == person_id.lower()][0]
+                                if person.person_id.lower() == person_id.lower()][0]
             self.people.remove(person_to_delete)
             for room in itertools.chain(self.offices, self.livingspaces):
                 if person_to_delete in room.occupants:
                     room.occupants.remove(person_to_delete)
 
             for person in itertools.chain(self.office_waitinglist,
-self.livingspace_waitinglist):
+                                          self.livingspace_waitinglist):
                 if person == person_to_delete:
                     if person in self.office_waitinglist:
                         self.office_waitinglist.remove(person)
                     else:
                         self.livingspace_waitinglist.remove(person)
-            print(colored("\nPerson deleted successfully!\n","green"))
+            print(colored("\nPerson deleted successfully!\n", "green"))
 
         except IndexError:
             print(colored("\nThe person does not exist.\n", "red"))
@@ -413,7 +435,7 @@ self.livingspace_waitinglist):
     def delete_room(self, room_name):
         try:
             room_to_delete = [room for room in itertools.chain(self.offices, self.livingspaces)
-            if room.room_name.lower() == room_name.lower()][0]
+                              if room.room_name.lower() == room_name.lower()][0]
             for room in itertools.chain(self.offices, self.livingspaces):
                 if room == room_to_delete:
                     if room in self.offices:
@@ -440,7 +462,7 @@ self.livingspace_waitinglist):
         if db_name:
             engine = create_engine("sqlite:///{}".format(db_name))
         else:
-            engine=create_engine("sqlite:///amity_database.db")
+            engine = create_engine("sqlite:///amity_database.db")
 
         Base.metadata.create_all(engine)
         Session = sessionmaker(bind=engine)
@@ -448,26 +470,25 @@ self.livingspace_waitinglist):
         all_rooms = self.offices + self.livingspaces
 
         for person in self.people:
-            room_allocated = []
+            room_allocated = ""
             for room in all_rooms:
                 if person in room.occupants:
-                    room_allocated.append(room.room_name)
-            room_allocated =  " ".join(room_allocated)
-            person = PersonDb(id = None, person_id=person.person_id, person_name=person.person_name, person_type=person.person_type, wants_accommodation=person.wants_accom, room_allocated=room_allocated)
+                    room_allocated += room.room_name + " "
+            person = PersonDb(person_id=person.person_id, person_name=person.person_name,
+                              person_type=person.person_type, wants_accommodation=person.wants_accom, room_allocated=room_allocated)
             session.add(person)
             session.commit()
 
         for room in all_rooms:
             room_occupants = ""
             for occupant in room.occupants:
-                room_occupants += occupant.person_name
+                room_occupants += occupant.person_id + " "
             room = RoomDb(id=None, room_name=room.room_name,
-                        room_type=room.room_type, occupants=room_occupants)
+                          room_type=room.room_type, occupants=room_occupants, )
             session.add(room)
             session.commit()
         session.close()
-        print("Data saved successfully!")
-
+        print(colored("\nData saved successfully!\n", "green"))
 
     def load_state(self, db_name):
         """
@@ -478,22 +499,52 @@ self.livingspace_waitinglist):
         Session = sessionmaker(bind=engine)
         session = Session()
 
-        for p_record in  session.query(PersonDb):
+        # Load people data from db.
+        for p_record in session.query(PersonDb):
             if p_record.person_type.lower() == "fellow":
-                person = Fellow(p_record.person_id, p_record.person_name, p_record.person_type, p_record.wants_accommodation)
+                person = Fellow(p_record.person_id, p_record.person_name,
+                                p_record.person_type, p_record.wants_accommodation)
                 self.people.append(person)
+                if p_record.room_allocated == "" and p_record.wants_accommodation.lower() == "y":
+                    self.livingspace_waitinglist.append(person)
+                elif p_record.room_allocated == "":
+                    self.office_waitinglist.append(person)
+
 
             elif p_record.person_type.lower() == "staff":
-                person = Staff(p_record.person_id, p_record.person_name, p_record.person_type, p_record.wants_accommodation)
+                person = Staff(p_record.person_id, p_record.person_name,
+                               p_record.person_type, p_record.wants_accommodation)
                 self.people.append(person)
+                if p_record.room_allocated == "":
+                    self.office_waitinglist.append(person)
 
-
+        # Load rooms data from db
         for r_record in session.query(RoomDb):
             if r_record.room_type.lower() == "office":
-                room = OfficeSpace(r_record.room_type, r_record.room_name, r_record.occupants)
+                occupants_list = []
+                occupants = r_record.occupants.split(" ")
+                for occupant in occupants:
+                    for person in self.people:
+                        if occupant.lower() == person.person_id.lower():
+                            occupants_list.append(person)
+                room = OfficeSpace(r_record.room_type,
+                                   r_record.room_name)
+                room.occupants = occupants_list
                 self.offices.append(room)
 
             else:
-                room = LivingSpace(r_record.room_type, r_record.room_name, r_record.occupants)
+                room = LivingSpace(r_record.room_type,
+                                   r_record.room_name)
+                occupants_list = []
+                occupants = r_record.occupants.split(" ")
+                for occupant in occupants:
+                    for person in self.people:
+                        if occupant.lower() == person.person_id.lower():
+                            occupants_list.append(person)
+
+                room = OfficeSpace(r_record.room_type,
+                                   r_record.room_name)
+                room.occupants = occupants_list
                 self.livingspaces.append(room)
-        print ("Data loaded succesfully!")
+
+        print(colored("\nData loaded succesfully!\n", "green"))
