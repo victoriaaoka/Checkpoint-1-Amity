@@ -300,7 +300,8 @@ Reallocation can not be to same room.\n", "red"))
                     return"Successfully reallocated!"
 
                 else:
-                    print(colored("\nReallocation can only be office - office\
+                    if new_room.room_type != current_room.room_type:
+                        print(colored("\nReallocation can only be office - office\
 or livingspace - livingspace.\n", "red"))
             except IndexError:
                 if reallocating_person.person_type.lower() == "staff" \
@@ -308,8 +309,11 @@ or livingspace - livingspace.\n", "red"))
                     print(
                         colored("\nStaff cannot be reallocated to a living space!\n", "red"))
                 else:
-                    print(colored("\nThe person does not have any room currently. \
+                    if reallocating_person in itertools.chain(self.office_waitinglist, self.livingspace_waitinglist):
+                        print(colored("\nThe person does not have any room currently. \
 Please use allocate_unallocted.\n", "yellow"))
+                    else:
+                        print("the person has no " + new_room.room_type)
 
     def print_unallocated(self, filename=None):
         """
@@ -468,13 +472,29 @@ livingspace_waitinglist.\n", "yellow"))
                     room_allocated = ""
                     for room in itertools.chain(self.offices, self.livingspaces):
                         if person in room.occupants:
-                            room_allocated += room.room_name + " "
-                    table.column_headers = ["id", "position", "name", "w/accommodation", "room_allocated"]
+                            room_allocated += room.room_name + ","
+                    table.column_headers = ["Person_id", "Position", "Person_Name", "W/Accommodation", "Room/s_Allocated"]
                     table.append_row([person.person_id, person.person_type,
                         person.person_name, person.wants_accom, room_allocated])
             print(colored(table, "blue"))
         else:
             print("There are no people registered yet.")
+
+    def print_rooms(self):
+        table = BeautifulTable()
+        all_rooms = self.offices + self.livingspaces
+        if self.offices or self.livingspaces:
+            while len(table) < len(all_rooms):
+                for room in itertools.chain(self.offices, self.livingspaces):
+                    occupants = ""
+                    for person in self.people:
+                        if person in room.occupants:
+                            occupants += person.person_name + ","
+                    table.column_headers = ["Room_type", "Room_Name", "Occupants"]
+                    table.append_row([room.room_type, room.room_name, occupants])
+            print(colored(table, "blue"))
+        else:
+            print("There are rooms in the Amity.")
 
     def save_state(self, db_name):
         """
