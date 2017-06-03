@@ -167,5 +167,90 @@ Please use allocate_unallocated.")
         result = self.amity.print_allocations("file_name")
         self.assertEqual(result, "Allocations saved successfully!")
 
+    def test_allocate_unallocted_person_an_office_successfully(self):
+        self.amity.add_person("122", "Will Smith", "fellow")
+        self.amity.create_room("office", "Java")
+        result = self.amity.allocate_unallocated_office("122")
+        self.assertEqual(result, "Allocation successful!")
+
+    def test_allocate_unallocated_person_a_livingspace_successfully(self):
+        self.amity.add_person("122", "Will Smith", "fellow", "y")
+        self.amity.create_room("livingspace", "Lux")
+        result = self.amity.allocate_unallocated_livingspace("122")
+        self.assertEqual(result, "Allocation successful!")
+
+    def test_disallocate_person_without_a_room(self):
+        result = self.amity.disallocate_person("2789")
+        self.assertEqual(result,"The person is not assigned any room.")
+
+    def test_disallocate_person_successfully(self):
+        ninjaz = self.amity.create_room("office","Ninjaz")
+        self.amity.add_person("123", "Aoka Victoria", "fellow")
+        self.amity.add_person("345", "Debon Vanmou", "fellow")
+        self.amity.add_person("98", "Max Black", "staff")
+        self.amity.add_person("1000", "Carolyn Chaning", "fellow")
+        result = self.amity.disallocate_person("123")
+        self.assertEqual(result, "Person disallocated successfully!")
+        self.assertEqual(len(ninjaz.occupants), 3)
+
+
+    def test_delete_person_not_registered(self):
+        result = self.amity.delete_person("300")
+        self.assertEqual(result, "The person does not exist.")
+
+    def test_delete_person_successcully(self):
+        java = self.amity.create_room("office", "Java")
+        self.amity.add_person("123", "Robert Burale", "staff")
+        self.amity.add_person("234", "Carol Radul", "fellow")
+        self.amity.delete_person("123")
+        self.assertEqual(len(java.occupants), 1)
+
+    def test_delete_room_not_created(self):
+        result = self.amity.delete_room("Dakar")
+        self.assertEqual(result, "The room does not exist.")
+
+    def test_delete_empty_room_successfully(self):
+        self.amity.create_room("office", "Val")
+        self.amity.create_room("office", "Django")
+        result = self.amity.delete_room("Val")
+        self.assertEqual(result, "Room deleted successfully!")
+        self.assertEqual(len(self.amity.offices), 1)
+
+    def test_delete_room_that_has_occupants(self):
+        self.amity.create_room("Livingspace", "Luxury")
+        self.amity.add_person("167", "Ciccy Boke", "fellow", "Y")
+        self.amity.add_person("098", "Christine Shiku", "fellow", "y")
+        result = self.amity.delete_room("Luxury")
+        self.assertEqual(result, "Room deleted successfully!")
+        self.assertEqual(len(self.amity.livingspace_waitinglist), 2)
+
+    def test_save_and_load_room_data_to_and_from_DB(self):
+        java = self.amity.create_room("office","Java")
+        pacific = self.amity.create_room("livingspace", "Pacific")
+        self.amity.add_person("1234", "Judith Gathua", "staff")
+        self.amity.add_person("123", "Macdonald Felix", "fellow", "Y")
+        self.amity.add_person("554", "Godwin Karanja", "fellow", "y")
+        self.amity.save_state("newamitydb")
+
+        self.amity.load_state("newamitydb")
+        self.assertEqual(len(java.occupants), 3)
+        self.assertEqual(len(pacific.occupants), 2)
+
+    def test_save_and_load_people_data_to_and_from_DB(self):
+        self.amityy = Amity()
+        lux = self.amity.create_room("office", "lux")
+        self.amityy.add_person("1234", "Judith Gathua", "staff")
+        self.amityy.add_person("123", "Macdonald Felix", "fellow", "Y")
+        self.amityy.add_person("554", "Godwin Karanja", "fellow", "y")
+        self.amityy.save_state("oodb")
+
+        self.amity.load_state("oodb")
+        self.assertEqual(len(self.amityy.people), 3)
+
+    def test_load_data_from_a_file_that_does_not_exist(self):
+        result = self.amity.load_state("nonexistingdb")
+        self.assertEqual(result, "The database does not exist!")
+
+
 if __name__ == "__main__":
     unittest.main()
