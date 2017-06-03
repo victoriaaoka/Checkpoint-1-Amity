@@ -31,8 +31,6 @@ from my_app.amity_class import Amity
 from termcolor import colored
 
 
-
-
 def docopt_cmd(func):
     """
     This decorator is used to simplify the try/except block and pass the result
@@ -120,12 +118,6 @@ Separate the input with a comma(,) ","yellow")\
         if not wants_accom:
             wants_accom = "N"
 
-        elif wants_accom.lower() != "n" and wants_accom.lower() != "y":
-            print (colored("\n\nWants accommodation can only be 'Y' or 'N'\n\n", "red"))
-
-        elif person_type.lower() == "staff" and wants_accom.lower()== "y":
-            print (colored( "\n\nStaff cannot be allocated accomodation space\n\n","red"))
-
         self.amity.add_person(person_id, person_name, person_type, wants_accom)
 
     @docopt_cmd
@@ -193,6 +185,13 @@ Separate the input with a comma(,) ","yellow")\
         roomnames = arg["<room_name>"].split(",")
         for room_name in roomnames:
             self.amity.delete_room(room_name)
+
+    @docopt_cmd
+    def do_print_people(self, arg):
+        """
+        Usage: load_state
+        """
+        self.amity.print_people()
 
     @docopt_cmd
     def do_save_state(self, arg):
