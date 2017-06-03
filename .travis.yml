@@ -7,5 +7,5 @@ install:
     - pip install pytest-cov
 
 script:
-   - py.test --cov-report=term --cov=test_cases
+    - py.test --cov-report=term --cov=test_cases
 after_success: coveralls
