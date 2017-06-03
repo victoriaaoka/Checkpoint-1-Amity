@@ -16,10 +16,6 @@ class TestPerson(unittest.TestCase):
         self.assertEqual( self.staff.person_type, "Staff" ,
                           msg = "Invalid person_type specified")
 
-    def test_invalid_accomodation_option(self):
-        self.assertEqual(self.fellow.wants_accom,'N' or 'Y',
-                         msg = "Invalid option, wants accommodation can only be 'y' or 'N'")
-
 
 if __name__ == '__main__':
     unittest.main()
