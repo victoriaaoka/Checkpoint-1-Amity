@@ -36,7 +36,8 @@ class Amity(object):
         """
 
         if not room_name.isalpha():
-            print(colored("\nRoom names must be of type string only!\n", "red"))
+            print(colored("\nRoom_name must be of type string!\n", "red"))
+            return"Room_name must be of type string!"
 
         elif room_type.lower() != "office" and room_type.lower() != "livingspace":
             print(colored(
@@ -80,11 +81,16 @@ created!\n".format(room_name), "blue"))
         names = person_name.split(" ")
         for name in names:
             if not name.isalpha():
-                print(colored("\nPerson names must be of type string only!\n", "red"))
-            break
+                print(colored("\nPerson_name must be of type string!\n", "red"))
+                return "Person_name must be of type string!"
+
+        if not person_type.isalpha():
+                print(colored("\nPerson_type must be of type string!\n", "red"))
+                return "Person_type must be of type string!"
 
         if not person_id.isdigit():
                 print(colored("\nPerson_id can only be number!\n","red"))
+                return "Person_id can only be number!"
 
         elif wants_accom.lower() != "n" and wants_accom.lower() != "y":
             print (colored("\n\nWants accommodation can only be 'Y' or 'N'\n\n", "red"))
@@ -93,7 +99,7 @@ created!\n".format(room_name), "blue"))
             print (colored( "\n\nStaff cannot be allocated accomodation space\n\n","red"))
 
         else:
-            if person_id.lower() in [person.person_id.lower() for person in self.people]:
+            if person_id in [person.person_id for person in self.people]:
                 print(colored("\nPerson id: " + person_id + " already exists.\n", "red"))
 
             elif person_type.lower() == "fellow":
@@ -105,6 +111,7 @@ created!\n".format(room_name), "blue"))
                 self.allocate_office()
                 if wants_accom.lower() == "y":
                     self.allocate_livingspace()
+                return "Added successfully!"
 
             elif person_type.lower() == "staff":
                 new_person = Staff(person_id, person_name,
@@ -113,6 +120,7 @@ created!\n".format(room_name), "blue"))
                 print (colored("\nStaff " + person_name +
                                "  has been successfully added.", "blue"))
                 self.allocate_office()
+                return "Added successfully!"
             else:
                 print(colored("\nWrong person_type! A person can only be a staff or fellow\n", "red"))
                 return "Wrong person_type! A person can only be a staff or fellow"
@@ -168,6 +176,7 @@ the livingspace " + selected_livingspace.room_name + ".", "blue"))
                 self.livingspace_waitinglist.append(person)
                 print (colored(
                     "\nThere are no available living spaces! Added to waiting List.", "red"))
+                return "There are no available living spaces! Added to waiting List."
 
     def print_room(self, room_name):
         """
@@ -176,6 +185,7 @@ the livingspace " + selected_livingspace.room_name + ".", "blue"))
         if room_name.lower() not in [room.room_name.lower()
                                      for room in itertools.chain(self.offices, self.livingspaces)]:
             print(colored("\nThe room " + room_name + " does not exist!\n", "red"))
+            return "The room does not exist!"
 
         else:
             for room in itertools.chain(self.offices, self.livingspaces):
@@ -233,7 +243,6 @@ the livingspace " + selected_livingspace.room_name + ".", "blue"))
         output = ""
         if not self.offices and not self.livingspaces:
             print(colored("\nThere are no rooms in the Amity!", "red"))
-
         for room in itertools.chain(self.offices, self.livingspaces):
             if len(room.occupants) <= 0:
                 print(colored("\n" + room.room_type + " " +
@@ -258,6 +267,7 @@ the livingspace " + selected_livingspace.room_name + ".", "blue"))
             txt_file.close()
             print("\nData has been successfully \
 saved to " + filename + ".txt\n")
+            return "Allocations saved successfully!"
 
     def reallocate_person(self, person_id, new_room_name):
         """
@@ -282,6 +292,8 @@ saved to " + filename + ".txt\n")
         if reallocating_person in new_room.occupants:
             print(colored("\nThe person is in the room! \
 Reallocation can not be to same room.\n", "red"))
+            return "The person is in the room! \
+Reallocation can not be to same room."
 
         elif len(new_room.occupants) == new_room.capacity:
             print(colored("\nThe new room is full!\n", "yellow"))
@@ -311,9 +323,12 @@ or livingspace - livingspace.\n", "red"))
                 else:
                     if reallocating_person in itertools.chain(self.office_waitinglist, self.livingspace_waitinglist):
                         print(colored("\nThe person does not have any room currently. \
-Please use allocate_unallocted.\n", "yellow"))
+Please use allocate_unallocated.\n", "yellow"))
+                        return "The person does not have any room currently. \
+Please use allocate_unallocated."
                     else:
-                        print("the person has no " + new_room.room_type)
+                        print("The person has not been allocated a " + new_room.room_type + "yet.")
+                        return "The person has not been allocated a " + new_room.room_type + " yet."
 
     def print_unallocated(self, filename=None):
         """
@@ -350,7 +365,7 @@ moment.\n", "yellow"))
                 txt_file.close()
                 print(colored("\nUnallocations successfully saved to "
                               + filename + ".txt\n", "green"))
-                return "Unallocations successfully saved"
+                return "Unallocations successfully saved."
 
     def allocate_unallocated_office(self, person_id):
         try:
@@ -473,7 +488,8 @@ livingspace_waitinglist.\n", "yellow"))
                     for room in itertools.chain(self.offices, self.livingspaces):
                         if person in room.occupants:
                             room_allocated += room.room_name + ","
-                    table.column_headers = ["Person_id", "Position", "Person_Name", "W/Accommodation", "Room/s_Allocated"]
+                    table.column_headers = ["Person_id", "Position", "Person_Name", \
+                    "W/Accommodation", "Room/s_Allocated"]
                     table.append_row([person.person_id, person.person_type,
                         person.person_name, person.wants_accom, room_allocated])
             print(colored(table, "blue"))
