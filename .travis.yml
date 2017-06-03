@@ -7,6 +7,6 @@ install:
     - pip install pytest-cov
 
 script:
-  coverage run --source=test_cases manage.py test
+  coverage run --source=my_app manage.py test_cases
 after_success:
   coveralls
