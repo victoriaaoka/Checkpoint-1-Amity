@@ -33,12 +33,6 @@ class Amity(object):
         This method creates rooms based on a user's input.
         Rooms can either be an office or a living space.
         """
-        if not room_name.isalpha():
-            print(colored("room names must be alphabetical characters"))
-
-        if not isinstance(room_type, str) or not isinstance(room_name, str):
-            raise TypeError(
-                colored("\nUse input of type string only!\n", "red"))
 
         if not room_name.isalpha():
             print(colored("\nRoom names must be of type string only!\n", "red"))
@@ -84,37 +78,38 @@ created!\n".format(room_name), "blue"))
         for name in names:
             if not name.isalpha():
                 print(colored("\nPerson names must be of type string only!\n", "red"))
+            break
 
-            elif not person_id.isdigit():
-                print("Person_id can only be number!")
+        if not person_id.isdigit():
+                print(colored("\nPerson_id can only be number!\n","red"))
 
+        else:
+            if person_id.lower() in [person.person_id.lower() for person in self.people]:
+                print(colored("\nPerson id: " + person_id + " already exists.\n", "red"))
+
+            elif person_type.lower() == "fellow":
+                new_person = Fellow(person_id, person_name,
+                                    person_type, wants_accom)
+                self.people.append(new_person)
+                print(colored("\nFellow " + person_name +
+                              " has been successfully added.\n", "blue"))
+                self.allocate_office()
+                if wants_accom.lower() == "y":
+                    self.allocate_livingspace()
+                return "Added successfully"
+
+            elif person_type.lower() == "staff":
+                new_person = Staff(person_id, person_name,
+                                   person_type, wants_accom="N")
+                self.people.append(new_person)
+                print (colored("\nStaff " + person_name +
+                               "  has been successfully added.\n", "blue"))
+                self.allocate_office()
+                return "Added successfully"
             else:
-                if person_id.lower() in [person.person_id.lower() for person in self.people]:
-                    print(colored("\nPerson id: " + person_id + " already exists.\n", "red"))
-
-                elif person_type.lower() == "fellow":
-                    new_person = Fellow(person_id, person_name,
-                                        person_type, wants_accom)
-                    self.people.append(new_person)
-                    print(colored("\nFellow " + person_name +
-                                  " has been successfully added.\n", "blue"))
-                    self.allocate_office()
-                    if wants_accom.lower() == "y":
-                        self.allocate_livingspace()
-                    return "Added successfully"
-
-                elif person_type.lower() == "staff":
-                    new_person = Staff(person_id, person_name,
-                                       person_type, wants_accom="N")
-                    self.people.append(new_person)
-                    print (colored("\nStaff " + person_name +
-                                   "  has been successfully added.\n", "blue"))
-                    self.allocate_office()
-                    return "Added successfully"
-                else:
-                    print(
-                        colored("\nWrong person_type! A person can only be a staff or fellow\n", "red"))
-                    return "Wrong person_type! A person can only be a staff or fellow"
+                print(
+                    colored("\nWrong person_type! A person can only be a staff or fellow\n", "red"))
+                return "Wrong person_type! A person can only be a staff or fellow"
 
     def allocate_office(self):
         """
@@ -124,7 +119,7 @@ created!\n".format(room_name), "blue"))
         if len(self.offices) == 0:
             self.office_waitinglist.append(person)
             print (
-                colored("\nThere are no offices created yet! Added to waiting list \n", "red"))
+                colored("\nThere are no offices created yet! Added to waiting list ", "red"))
         elif len(self.offices) > 0:
             available_offices = []
             full_offices = []
@@ -140,7 +135,7 @@ created!\n".format(room_name), "blue"))
             else:
                 self.office_waitinglist.append(person)
                 print(
-                    colored("\nThere are no available offices! Added to waiting List.\n", "red"))
+                    colored("\nThere are no available offices! Added to waiting List.", "red"))
 
     def allocate_livingspace(self):
         """"
@@ -150,7 +145,7 @@ created!\n".format(room_name), "blue"))
         if len(self.livingspaces) == 0:
             self.livingspace_waitinglist.append(person)
             print (colored(
-                "\nThere are no living spaces created yet! Added to waiting list.\n", "red"))
+                "\nThere are no living spaces created yet! Added to waiting list.", "red"))
         elif len(self.livingspaces) > 0:
             available_livingspaces = []
             full_livingspaces = []
@@ -162,11 +157,11 @@ created!\n".format(room_name), "blue"))
                 selected_livingspace.occupants.append(person)
                 self.status = True
                 print (colored("\n" + person.person_name + " has been allocated the livingspace " +
-                               selected_livingspace.room_name + "\n", "blue"))
+                               selected_livingspace.room_name + ".", "blue"))
             else:
                 self.livingspace_waitinglist.append(person)
                 print (colored(
-                    "\nThere are no available living spaces! Added to waiting List\n", "red"))
+                    "\nThere are no available living spaces! Added to waiting List.", "red"))
 
     def print_room(self, room_name):
         """
@@ -223,13 +218,11 @@ created!\n".format(room_name), "blue"))
                         self.add_person(person_id, person_name,
                                         person_type, wants_accom=wants_accom)
 
-            print(colored("\nData loaded successfully!\n", "green"))
-
     def print_allocations(self, filename=None):
         """
         This method prints a list of allocations onto the screen.
-        Specifying the optional -o option ie, the file _name,
-        outputs the registered allocations to a txt file.
+        Specifying the a file _name,
+        prints the registered allocations to a txt file.
         """
         output = ""
         if not self.offices and not self.livingspaces:
@@ -313,6 +306,10 @@ or livingspace - livingspace.\n", "red"))
 Please use allocate_unallocted.\n", "yellow"))
 
     def print_unallocated(self, filename=None):
+        """
+        This method prints a list of people who have not been allocated rooms.
+        The list is printed to a txt file if a file name is specified and on the screen
+        if there is no file name."""
         output = ""
 
         if not self.office_waitinglist and not self.livingspace_waitinglist:
@@ -409,8 +406,6 @@ moment.\n", "yellow"))
             return "The person is not assigned any room."
 
     def delete_person(self, person_id):
-        all_rooms = self.offices + self.livingspaces
-
         try:
             person_to_delete = [person for person in self.people
                                 if person.person_id.lower() == person_id.lower()][0]
@@ -455,96 +450,111 @@ moment.\n", "yellow"))
             print(colored("\nThe room does not exist.\n", "red"))
             return "The room does not exist."
 
-    def save_state(self, db_name='amity_database.db'):
+    def save_state(self, db_name):
         """
         This method persists all the data stored in the app to a SQLite database.
         """
-        if db_name:
-            engine = create_engine("sqlite:///{}".format(db_name))
+        if not db_name.isalpha():
+            print(colored("\nDatabase name can only be a string.\n", "red"))
         else:
-            engine = create_engine("sqlite:///amity_database.db")
+            engine = create_engine("sqlite:///{}".format(db_name))
 
-        Base.metadata.create_all(engine)
-        Session = sessionmaker(bind=engine)
-        session = Session()
-        all_rooms = self.offices + self.livingspaces
+            Base.metadata.create_all(engine)
+            Session = sessionmaker(bind=engine)
+            session = Session()
+            all_rooms = self.offices + self.livingspaces
 
-        for person in self.people:
-            room_allocated = ""
+            for table in Base.metadata.sorted_tables:
+                    session.execute(table.delete())
+                    session.commit()
+
+            for person in self.people:
+                room_allocated = ""
+                for room in all_rooms:
+                    if person in room.occupants:
+                        room_allocated += room.room_name + " "
+                person = PersonDb(person_id=person.person_id,
+                    person_name=person.person_name,
+                    person_type=person.person_type,
+                    wants_accommodation=person.wants_accom,
+                    room_allocated=room_allocated)
+                session.add(person)
+                session.commit()
+
             for room in all_rooms:
-                if person in room.occupants:
-                    room_allocated += room.room_name + " "
-            person = PersonDb(person_id=person.person_id, person_name=person.person_name,
-                              person_type=person.person_type, wants_accommodation=person.wants_accom, room_allocated=room_allocated)
-            session.add(person)
-            session.commit()
-
-        for room in all_rooms:
-            room_occupants = ""
-            for occupant in room.occupants:
-                room_occupants += occupant.person_id + " "
-            room = RoomDb(id=None, room_name=room.room_name,
-                          room_type=room.room_type, occupants=room_occupants, )
-            session.add(room)
-            session.commit()
-        session.close()
-        print(colored("\nData saved successfully!\n", "green"))
+                room_occupants = ""
+                for occupant in room.occupants:
+                    room_occupants += occupant.person_id + " "
+                room = RoomDb(id=None, room_name=room.room_name,
+                              room_type=room.room_type, occupants=room_occupants, )
+                session.add(room)
+                session.commit()
+            session.close()
+            print(colored("\nData saved successfully!\n", "green"))
 
     def load_state(self, db_name):
         """
         This method loads data from the database into the application.
         """
-        engine = create_engine("sqlite:///{}".format(db_name))
-        Base.metadata.create_all(engine)
-        Session = sessionmaker(bind=engine)
-        session = Session()
+        if not db_name.isalpha():
+            print(colored("\nDatabase name can only be a string.\n", "red"))
+        elif not os.path.isfile(db_name):
+                print(colored("\nThe database " + db_name + " does not exist!\n"))
 
-        # Load people data from db.
-        for p_record in session.query(PersonDb):
-            if p_record.person_type.lower() == "fellow":
-                person = Fellow(p_record.person_id, p_record.person_name,
-                                p_record.person_type, p_record.wants_accommodation)
-                self.people.append(person)
-                if p_record.room_allocated == "" and p_record.wants_accommodation.lower() == "y":
-                    self.livingspace_waitinglist.append(person)
-                elif p_record.room_allocated == "":
-                    self.office_waitinglist.append(person)
+        else:
+            engine = create_engine("sqlite:///{}".format(db_name))
+            Base.metadata.create_all(engine)
+            Session = sessionmaker(bind=engine)
+            session = Session()
+
+            # Load people data from db.
+            for p_record in session.query(PersonDb):
+                if p_record.person_type.lower() == "fellow":
+                    person = Fellow(p_record.person_id, p_record.person_name,
+                                    p_record.person_type, p_record.wants_accommodation)
+                    self.people.append(person)
+                    if p_record.room_allocated == "" and p_record.wants_accommodation.lower() == "y":
+                        self.livingspace_waitinglist.append(person)
+                    if p_record.room_allocated in self.offices and p_record.wants_accommodation.lower() == "y":
+                        self.livingspace_waitinglist.append(person)
+                    if p_record.room_allocated == "":
+                        self.office_waitinglist.append(person)
 
 
-            elif p_record.person_type.lower() == "staff":
-                person = Staff(p_record.person_id, p_record.person_name,
-                               p_record.person_type, p_record.wants_accommodation)
-                self.people.append(person)
-                if p_record.room_allocated == "":
-                    self.office_waitinglist.append(person)
+                elif p_record.person_type.lower() == "staff":
+                    person = Staff(p_record.person_id, p_record.person_name,
+                                   p_record.person_type, p_record.wants_accommodation)
+                    self.people.append(person)
+                    if p_record.room_allocated == "":
+                        self.office_waitinglist.append(person)
 
-        # Load rooms data from db
-        for r_record in session.query(RoomDb):
-            if r_record.room_type.lower() == "office":
-                occupants_list = []
-                occupants = r_record.occupants.split(" ")
-                for occupant in occupants:
-                    for person in self.people:
-                        if occupant.lower() == person.person_id.lower():
-                            occupants_list.append(person)
-                room = OfficeSpace(r_record.room_type,
-                                   r_record.room_name)
-                room.occupants = occupants_list
-                self.offices.append(room)
+            # Load rooms data from db
+            for r_record in session.query(RoomDb):
+                if r_record.room_type.lower() == "office":
+                    occupants_list = []
+                    occupants = r_record.occupants.split(" ")
+                    for occupant in occupants:
+                        for person in self.people:
+                            if occupant.lower() == person.person_id.lower():
+                                occupants_list.append(person)
+                    room = OfficeSpace(r_record.room_type,
+                                       r_record.room_name)
+                    room.occupants = occupants_list
+                    self.offices.append(room)
 
-            else:
-                room = LivingSpace(r_record.room_type,
-                                   r_record.room_name)
-                occupants_list = []
-                occupants = r_record.occupants.split(" ")
-                for occupant in occupants:
-                    for person in self.people:
-                        if occupant.lower() == person.person_id.lower():
-                            occupants_list.append(person)
+                else:
+                    room = LivingSpace(r_record.room_type,
+                                       r_record.room_name)
+                    occupants_list = []
+                    occupants = r_record.occupants.split(" ")
+                    for occupant in occupants:
+                        for person in self.people:
+                            if occupant.lower() == person.person_id.lower():
+                                occupants_list.append(person)
 
-                room = OfficeSpace(r_record.room_type,
-                                   r_record.room_name)
-                room.occupants = occupants_list
-                self.livingspaces.append(room)
+                    room = OfficeSpace(r_record.room_type,
+                                       r_record.room_name)
+                    room.occupants = occupants_list
+                    self.livingspaces.append(room)
 
-        print(colored("\nData loaded succesfully!\n", "green"))
+            print(colored("\nData loaded succesfully!\n", "green"))
