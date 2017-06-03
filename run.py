@@ -63,28 +63,31 @@ def docopt_cmd(func):
 
 
 class AmitySpaceAllocationApp (cmd.Cmd):
-    intro = colored("\n\n\n"+"*" * 180, "white")+ colored("\n\n\t\tHello, \
+    intro = colored("\n\n\n\t\t"+"*" * 120, "white")+ colored("\n\n\t\t\t\tHello, \
 Welcome to the Amity space allocation app!\n\n", "blue")\
-        +colored("\t\tThe commands are:\
-\n\n \t\t> add_person <person_id> <first_name> <last_name> \
-(FELLOW|STAFF) [<wants_accom>]\n\n\t\t")\
+        +colored("\t\t\tThe commands are:\
+\n\n \t\t\t> add_person <person_id> <first_name> <last_name> \
+(FELLOW|STAFF) [<wants_accom>]\n\n\t\t\t")\
         +colored("> create_room <room_type> <room_name> ...")\
-        +colored("\t\t\t> load_people <file_name>")\
-        +colored("\n\n \t\t> reallocate_person <person_id> <new_room>")\
-        +colored("\t\t\t> print_allocations [<file_name>]")\
-        +colored("\n\n \t\t> print_room <room_name>...")\
-        +colored("\t\t\t\t\t> print_unallocated [<filename>]")\
-        +colored("\n\n \t\t> allocate_unallocated_office <person_id>...")\
-        +colored("\t\t\t> allocate_unallocated_livingspace <person_id>...")\
-        +colored("\n\n \t\t> disallocate_person <person_id>...")\
-        +colored("\t\t\t\t> delete_person <person_id>...")\
-        +colored("\n\n \t\t> delete_room <room_name>...")\
-        +colored("\t\t\t\t\t> save_state <db_name>")\
-        +colored("\n\n \t\t> load_state <db_name>\t\t\t\t\t\t> help\n\n\t\t> quit\t\t\t\t\t\t\t\t> clear")\
-        +colored("\n\n\t\t* The commands with (...) allow you to enter multiple input. \
+        +colored("\t\t> load_people <file_name>")\
+        +colored("\n\n \t\t\t> reallocate_person <person_id> <new_room>")\
+        +colored("\t\t> print_allocations [<file_name>]")\
+        +colored("\n\n \t\t\t> print_room <room_name>...")\
+        +colored("\t\t\t\t> print_unallocated [<filename>]")\
+        +colored("\n\n \t\t\t> allocate_unallocated_office <person_id>...")\
+        +colored("\t\t> allocate_unallocated_livingspace <person_id>...")\
+        +colored("\n\n \t\t\t> disallocate_person <person_id>...")\
+        +colored("\t\t\t> delete_person <person_id>...")\
+        +colored("\n\n \t\t\t> delete_room <room_name>...")\
+        +colored("\t\t\t\t> save_state <db_name>")\
+        +colored("\n\n \t\t\t> print_people")\
+        +colored("\t\t\t\t\t\t> print_rooms")\
+        +colored("\n\n \t\t\t> load_state <db_name>\t\t\t\t\t> help\n\n\t\t\t> quit\t\t\t\t\t\t\t> clear")\
+        +colored("\n\n\t\t\t* The commands with (...) allow you to enter multiple input. \
 Separate the input with a comma(,) ","yellow")\
-        +colored("\n\n\t\t* use 'clear' to clear the screen", "yellow")\
-        + colored("\n\n\t\t* Click on the screen to type.\n\n", "yellow") + colored("*" * 180 + "\n\n\n", "white")
+        +colored("\n\n\t\t\t* For help on a specific command, type the command followed by '-h'", "yellow")\
+        +colored("\n\n\t\t\t* use 'clear' to clear the screen", "yellow")\
+        + colored("\n\n\t\t\t* Click on the screen to type.\n\n", "yellow") + colored("\t\t"+ "*" * 120 + "\n\n\n", "white")
 
     prompt = "(AmitySpaceAllocationApp) "
     file = None
