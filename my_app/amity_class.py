@@ -321,14 +321,17 @@ or livingspace - livingspace.\n", "red"))
                     print(
                         colored("\nStaff cannot be reallocated to a living space!\n", "red"))
                 else:
-                    if reallocating_person in itertools.chain(self.office_waitinglist, self.livingspace_waitinglist):
+                    if reallocating_person in itertools.chain(
+                        self.office_waitinglist, self.livingspace_waitinglist):
                         print(colored("\nThe person does not have any room currently. \
 Please use allocate_unallocated.\n", "yellow"))
                         return "The person does not have any room currently. \
 Please use allocate_unallocated."
                     else:
-                        print("The person has not been allocated a " + new_room.room_type + "yet.")
-                        return "The person has not been allocated a " + new_room.room_type + " yet."
+                        print("The person has not been allocated a "
+                            + new_room.room_type + "yet.")
+                        return "The person has not been allocated a " \
+                        + new_room.room_type + " yet."
 
     def print_unallocated(self, filename=None):
         """
@@ -377,8 +380,10 @@ moment.\n", "yellow"))
                               if person.person_id.lower() == person_id.lower()][0]
                     available_office.occupants.append(person)
                     self.office_waitinglist.remove(person)
-                    print(colored("\n" + person.person_name + " moved from waiting list to office "
+                    print(colored("\n" + person.person_name
+                        + " moved from waiting list to office "
                                   + available_office.room_name + "\n", "green"))
+                    return"Allocation successful!"
                 except IndexError:
                     print(
                         colored("The person is not in the office_waitinglist.\n", "yellow"))
@@ -402,6 +407,7 @@ moment.\n", "yellow"))
                     print(colored("\n" + person.person_name + " moved from \
 waiting list to livingspace "
                                   + available_livingspace.room_name + "\n", "green"))
+                    return "Allocation successful!"
                 except IndexError:
                     print(
                         colored("The person is not in the \
@@ -428,6 +434,7 @@ livingspace_waitinglist.\n", "yellow"))
                             person_to_disallocate)
                         room.occupants.remove(person_to_disallocate)
             print(colored("\nPerson disallocated successfully!\n", "green"))
+            return "Person disallocated successfully!"
 
         except IndexError:
             print(colored("\nThe person is not assigned any room.\n", "red"))
@@ -464,17 +471,20 @@ livingspace_waitinglist.\n", "yellow"))
                 if room == room_to_delete:
                     if room in self.offices:
                         if len(room.occupants) > 0:
-                            for occupant in room.occupants:
-                                self.office_waitinglist.append(occupant)
-                                room.occupants.remove(occupant)
+                            while len(room.occupants) > 0:
+                                for occupant in room.occupants:
+                                    self.office_waitinglist.append(occupant)
+                                    room.occupants.remove(occupant)
                         self.offices.remove(room)
                     else:
                         if len(room.occupants) > 0:
-                            for occupant in room.occupants:
-                                self.livingspace_waitinglist.append(occupant)
-                                room.occupants.remove(occupant)
+                            while len(room.occupants) > 0:
+                                for occupant in room.occupants:
+                                    self.livingspace_waitinglist.append(occupant)
+                                    room.occupants.remove(occupant)
                         self.livingspaces.remove(room)
             print(colored("\nRoom deleted successfully!\n", "green"))
+            return "Room deleted successfully!"
         except IndexError:
             print(colored("\nThe room does not exist.\n", "red"))
             return "The room does not exist."
@@ -562,6 +572,7 @@ livingspace_waitinglist.\n", "yellow"))
             print(colored("\nDatabase name can only be a string.\n", "red"))
         elif not os.path.isfile(db_name):
                 print(colored("\nThe database " + db_name + " does not exist!\n"))
+                return "The database does not exist!"
 
         else:
             engine = create_engine("sqlite:///{}".format(db_name))
