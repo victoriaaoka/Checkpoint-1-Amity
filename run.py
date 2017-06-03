@@ -199,7 +199,7 @@ Separate the input with a comma(,) ","yellow")\
         """
         Usage: save_state <db_name>
         """
-        db_name = args["<db_name>"]
+        db_name = arg["<db_name>"]
         self.amity.save_state(db_name)
 
     @docopt_cmd
@@ -207,12 +207,11 @@ Separate the input with a comma(,) ","yellow")\
         """
         Usage: load_state <db_name>
         """
-        db_name = args['<db_name>']
+        db_name = arg['<db_name>']
         self.amity.load_state(db_name)
 
     def do_clear(self, arg):
         """Clears screen"""
-
         os.system("clear")
 
 
