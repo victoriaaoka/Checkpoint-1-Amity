@@ -4,6 +4,7 @@ import itertools
 import random
 from tabulate import tabulate
 from termcolor import colored
+from beautifultable import BeautifulTable
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -47,7 +48,8 @@ class Amity(object):
             if room_type.lower() == "office":
                 new_office = OfficeSpace(room_type, room_name)
                 if new_office.room_name.lower() in [room.room_name.lower()
-                                                    for room in itertools.chain(self.offices, self.livingspaces)]:
+                                                    for room in itertools.chain(
+                                                        self.offices, self.livingspaces)]:
                     print (colored("\nThe room name " +
                                    room_name + " already exists!\n", "red"))
                 else:
@@ -59,7 +61,8 @@ created!\n".format(room_name), "blue"))
             elif room_type.lower() == "livingspace":
                 new_livingspace = LivingSpace(room_type, room_name)
                 if new_livingspace.room_name.lower() in [room.room_name.lower()
-                                                         for room in itertools.chain(self.offices, self.livingspaces)]:
+                                                         for room in itertools.chain(
+                                                            self.offices, self.livingspaces)]:
                     print (colored("\nThe room name " +
                                    room_name + " already exists!\n", "red"))
                 else:
@@ -83,6 +86,12 @@ created!\n".format(room_name), "blue"))
         if not person_id.isdigit():
                 print(colored("\nPerson_id can only be number!\n","red"))
 
+        elif wants_accom.lower() != "n" and wants_accom.lower() != "y":
+            print (colored("\n\nWants accommodation can only be 'Y' or 'N'\n\n", "red"))
+
+        elif person_type.lower() == "staff" and wants_accom.lower()== "y":
+            print (colored( "\n\nStaff cannot be allocated accomodation space\n\n","red"))
+
         else:
             if person_id.lower() in [person.person_id.lower() for person in self.people]:
                 print(colored("\nPerson id: " + person_id + " already exists.\n", "red"))
@@ -92,23 +101,20 @@ created!\n".format(room_name), "blue"))
                                     person_type, wants_accom)
                 self.people.append(new_person)
                 print(colored("\nFellow " + person_name +
-                              " has been successfully added.\n", "blue"))
+                              " has been successfully added.", "blue"))
                 self.allocate_office()
                 if wants_accom.lower() == "y":
                     self.allocate_livingspace()
-                return "Added successfully"
 
             elif person_type.lower() == "staff":
                 new_person = Staff(person_id, person_name,
                                    person_type, wants_accom="N")
                 self.people.append(new_person)
                 print (colored("\nStaff " + person_name +
-                               "  has been successfully added.\n", "blue"))
+                               "  has been successfully added.", "blue"))
                 self.allocate_office()
-                return "Added successfully"
             else:
-                print(
-                    colored("\nWrong person_type! A person can only be a staff or fellow\n", "red"))
+                print(colored("\nWrong person_type! A person can only be a staff or fellow\n", "red"))
                 return "Wrong person_type! A person can only be a staff or fellow"
 
     def allocate_office(self):
@@ -130,8 +136,8 @@ created!\n".format(room_name), "blue"))
                 selected_office = random.choice(available_offices)
                 selected_office.occupants.append(person)
                 self.status = True
-                print (colored("\n" + person.person_name + " has been allocated the office " +
-                               selected_office.room_name + ".\n", "blue"))
+                print (colored("\n" + person.person_name + " has been allocated \
+the office " + selected_office.room_name + ".", "blue"))
             else:
                 self.office_waitinglist.append(person)
                 print(
@@ -156,8 +162,8 @@ created!\n".format(room_name), "blue"))
                 selected_livingspace = random.choice(available_livingspaces)
                 selected_livingspace.occupants.append(person)
                 self.status = True
-                print (colored("\n" + person.person_name + " has been allocated the livingspace " +
-                               selected_livingspace.room_name + ".", "blue"))
+                print (colored("\n" + person.person_name + " has been allocated \
+the livingspace " + selected_livingspace.room_name + ".", "blue"))
             else:
                 self.livingspace_waitinglist.append(person)
                 print (colored(
@@ -374,14 +380,17 @@ moment.\n", "yellow"))
                               if person.person_id.lower() == person_id.lower()][0]
                     available_livingspace.occupants.append(person)
                     self.livingspace_waitinglist.remove(person)
-                    print(colored("\n" + person.person_name + " moved from waiting list to livingspace "
+                    print(colored("\n" + person.person_name + " moved from \
+waiting list to livingspace "
                                   + available_livingspace.room_name + "\n", "green"))
                 except IndexError:
                     print(
-                        colored("The person is not in the livingspace_waitinglist.\n", "yellow"))
+                        colored("The person is not in the \
+livingspace_waitinglist.\n", "yellow"))
             else:
                 print(
-                    colored("\nThere are no people in the livingspace_waitinglist\n", "yellow"))
+                    colored("\nThere are no people in the\
+ livingspace_waitinglist\n", "yellow"))
         except IndexError:
             print(colored("\nThere are no available livingspaces.\n", "yellow"))
 
@@ -429,7 +438,8 @@ moment.\n", "yellow"))
 
     def delete_room(self, room_name):
         try:
-            room_to_delete = [room for room in itertools.chain(self.offices, self.livingspaces)
+            room_to_delete = [room for room in itertools.chain(
+                self.offices, self.livingspaces)
                               if room.room_name.lower() == room_name.lower()][0]
             for room in itertools.chain(self.offices, self.livingspaces):
                 if room == room_to_delete:
@@ -449,6 +459,22 @@ moment.\n", "yellow"))
         except IndexError:
             print(colored("\nThe room does not exist.\n", "red"))
             return "The room does not exist."
+
+    def print_people(self):
+        table = BeautifulTable()
+        if self.people:
+            while len(table) < len(self.people):
+                for person in self.people:
+                    room_allocated = ""
+                    for room in itertools.chain(self.offices, self.livingspaces):
+                        if person in room.occupants:
+                            room_allocated += room.room_name + " "
+                    table.column_headers = ["id", "position", "name", "w/accommodation", "room_allocated"]
+                    table.append_row([person.person_id, person.person_type,
+                        person.person_name, person.wants_accom, room_allocated])
+            print(colored(table, "blue"))
+        else:
+            print("There are no people registered yet.")
 
     def save_state(self, db_name):
         """
@@ -486,7 +512,7 @@ moment.\n", "yellow"))
                 for occupant in room.occupants:
                     room_occupants += occupant.person_id + " "
                 room = RoomDb(id=None, room_name=room.room_name,
-                              room_type=room.room_type, occupants=room_occupants, )
+                              room_type=room.room_type, occupants=room_occupants)
                 session.add(room)
                 session.commit()
             session.close()
@@ -513,9 +539,11 @@ moment.\n", "yellow"))
                     person = Fellow(p_record.person_id, p_record.person_name,
                                     p_record.person_type, p_record.wants_accommodation)
                     self.people.append(person)
-                    if p_record.room_allocated == "" and p_record.wants_accommodation.lower() == "y":
+                    if p_record.room_allocated == "" and \
+                    p_record.wants_accommodation.lower() == "y":
                         self.livingspace_waitinglist.append(person)
-                    if p_record.room_allocated in self.offices and p_record.wants_accommodation.lower() == "y":
+                    if p_record.room_allocated in self.offices and \
+                    p_record.wants_accommodation.lower() == "y":
                         self.livingspace_waitinglist.append(person)
                     if p_record.room_allocated == "":
                         self.office_waitinglist.append(person)
