@@ -7,8 +7,7 @@ Base = declarative_base()
 
 class PersonDb(Base):
     __tablename__ = "People"
-    id = Column(Integer, primary_key= True, autoincrement=True)
-    person_id = Column(String)
+    person_id = Column(String, primary_key= True)
     person_name = Column(String)
     person_type = Column(String)
     wants_accommodation = Column(String)
