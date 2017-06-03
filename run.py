@@ -189,9 +189,16 @@ Separate the input with a comma(,) ","yellow")\
     @docopt_cmd
     def do_print_people(self, arg):
         """
-        Usage: load_state
+        Usage: print_people
         """
         self.amity.print_people()
+
+    @docopt_cmd
+    def do_print_rooms(self, arg):
+        """
+        Usage: print_rooms
+        """
+        self.amity.print_rooms()
 
     @docopt_cmd
     def do_save_state(self, arg):
