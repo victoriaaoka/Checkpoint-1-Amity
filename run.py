@@ -9,9 +9,8 @@ Usage:
     docopt print_allocations [<file_name>]
     docopt  print_unallocated [<filename>]
     docopt reallocate_person <person_id> <new_room>
-    docopt allocate_unallocated_office <person_id>
-    docopt allocate_unallocated_livingspace <person_id>
-    docopt disallocate_person <person_id>
+    docopt allocate_unallocated <person_id> <room_type>
+    docopt disallocate_person <person_id> <room_type>
     docopt delete_person <person_id>
     docopt delete_room <room_name>
     docopt save_state <db_name>
@@ -74,15 +73,14 @@ Welcome to the Amity space allocation app!\n\n", "blue")\
         +colored("\t\t> print_allocations [<file_name>]")\
         +colored("\n\n \t\t\t> print_room <room_name>...")\
         +colored("\t\t\t\t> print_unallocated [<filename>]")\
-        +colored("\n\n \t\t\t> allocate_unallocated_office <person_id>...")\
-        +colored("\t\t> allocate_unallocated_livingspace <person_id>...")\
-        +colored("\n\n \t\t\t> disallocate_person <person_id>...")\
-        +colored("\t\t\t> delete_person <person_id>...")\
+        +colored("\n\n \t\t\t> disallocate_person <person_id>... <room_type>")\
+        +colored("\t\t> delete_person <person_id>...")\
         +colored("\n\n \t\t\t> delete_room <room_name>...")\
         +colored("\t\t\t\t> save_state <db_name>")\
         +colored("\n\n \t\t\t> print_people")\
         +colored("\t\t\t\t\t\t> print_rooms")\
-        +colored("\n\n \t\t\t> load_state <db_name>\t\t\t\t\t> help\n\n\t\t\t> quit\t\t\t\t\t\t\t> clear")\
+        +colored("\n\n \t\t\t> allocate_unallocated_office <person_id>... <room_type>")\
+        +colored(" \t\t> load_state <db_name>\n\n\t\t\t> help\t\t\t\t\t\t\t> quit\n\n\t\t\t> clear")\
         +colored("\n\n\t\t\t* The commands with (...) allow you to enter multiple input. \
 Separate the input with a comma(,) ","yellow")\
         +colored("\n\n\t\t\t* For help on a specific command, type the command followed by '-h'", "yellow")\
@@ -149,18 +147,12 @@ Separate the input with a comma(,) ","yellow")\
         self.amity.print_unallocated(filename)
 
     @docopt_cmd
-    def do_allocate_unallocated_office(self, arg):
-        """Usage: allocate_unallocated_office <person_id>"""
+    def do_allocate_unallocated(self, arg):
+        """Usage: allocate_unallocated  <person_id> <room_type>"""
+        room_type = arg["<room_type>"]
         person_ids = arg["<person_id>"].split(",")
         for person_id in person_ids:
-            self.amity.allocate_unallocated_office(person_id)
-
-    @docopt_cmd
-    def do_allocate_unallocated_livingspace(self, arg):
-        """Usage: allocate_unallocated_livingspace <person_id>"""
-        person_ids = arg["<person_id>"].split(",")
-        for person_id in person_ids:
-            self.amity.allocate_unallocated_livingspace(person_id)
+            self.amity.allocate_unallocated(person_id, room_type)
 
     @docopt_cmd
     def do_reallocate_person(self, arg):
@@ -168,12 +160,14 @@ Separate the input with a comma(,) ","yellow")\
         person_id = arg["<person_id>"]
         new_room_name = arg["<new_room_name>"]
         self.amity.reallocate_person(person_id, new_room_name)
+
     @docopt_cmd
     def do_disallocate_person(self, arg):
-        """Usage: disallocate_person <person_id>"""
+        """Usage: disallocate_person  <person_id> <room_type>"""
+        room_type = arg["<room_type>"]
         person_ids = arg["<person_id>"].split(",")
         for person_id in person_ids:
-            self.amity.disallocate_person(person_id)
+            self.amity.disallocate_person(person_id, room_type)
 
     @docopt_cmd
     def do_delete_person(self, arg):
