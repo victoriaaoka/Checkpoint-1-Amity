@@ -7,7 +7,6 @@ class Room(object):
                 self.room_name = room_name
                 self.room_type = room_type
                 self.occupants = []
-                #return self
 
 class OfficeSpace(Room):
         """This class defines an instance of each Office
@@ -19,7 +18,6 @@ class OfficeSpace(Room):
                 self.room_name = room_name
                 self.occupants = []
                 self.capacity = 6
-                #return self
 
 class LivingSpace(Room):
         """This class defines an instance of each Livingspace
@@ -31,7 +29,3 @@ class LivingSpace(Room):
                 self.room_name = room_name
                 self.occupants = []
                 self.capacity = 4
-                #return self
-
-
-
