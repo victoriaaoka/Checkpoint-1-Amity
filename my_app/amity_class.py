@@ -423,21 +423,25 @@ livingspace_waitinglist.\n", "yellow"))
             print(colored("\nThere are no available livingspaces.\n", "yellow"))
 
     def allocate_unallocated(self, person_id, room_type):
-        if room_type.lower() != "office" and room_type.lower() != "livingspace":
-                    print(colored("\nA person can only be allocated an office \
-or a livingspace.\n", "red"))
-                    return "A person can only be allocated an office \
-or a livingspace."
+        try:
+            person_to_allocate = [person for person in itertools.chain(
+                self.livingspace_waitinglist, self.office_waitinglist)
+                if person.person_id == person_id][0]
 
-        elif person_id not in self.people:
-            print(colored("\nThe person is not registered!\n", "red"))
-            return "The person is not registered!"
+            if room_type.lower() != "office" and room_type.lower() != "livingspace":
+                        print(colored("\nA person can only be allocated an office \
+    or a livingspace.\n", "red"))
+                        return "A person can only be allocated an office \
+    or a livingspace."
 
-        elif room_type.lower() == "office":
-            self.allocate_unallocated_office(person_id)
+            elif room_type.lower() == "office":
+                self.allocate_unallocated_office(person_id)
 
-        else:
-            self.allocate_unallocated_livingspace(person_id)
+            else:
+                self.allocate_unallocated_livingspace(person_id)
+
+        except IndexError:
+                    print(colored("\nThe person is not in the waitinglist!\n", "red"))
 
 
     def disallocate_person(self, person_id, room_type):
@@ -681,6 +685,7 @@ or a livingspace."
                     room.occupants = occupants_list
                     self.livingspaces.append(room)
 
+            # load people to waitinglists
             for p_record in session.query(PersonDb):
                 if p_record.person_type.lower() == "fellow":
                     person = Fellow(p_record.person_id, p_record.person_name,
