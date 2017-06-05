@@ -645,22 +645,11 @@ or a livingspace."
                     person = Fellow(p_record.person_id, p_record.person_name,
                                     p_record.person_type, p_record.wants_accommodation)
                     self.people.append(person)
-                    if p_record.room_allocated == "" and \
-                    p_record.wants_accommodation.lower() == "y":
-                        self.livingspace_waitinglist.append(person)
-                    if p_record.room_allocated in self.offices and \
-                    p_record.wants_accommodation.lower() == "y":
-                        self.livingspace_waitinglist.append(person)
-                    if p_record.room_allocated == "":
-                        self.office_waitinglist.append(person)
-
 
                 elif p_record.person_type.lower() == "staff":
                     person = Staff(p_record.person_id, p_record.person_name,
                                    p_record.person_type, p_record.wants_accommodation)
                     self.people.append(person)
-                    if p_record.room_allocated == "":
-                        self.office_waitinglist.append(person)
 
             # Load rooms data from db
             for r_record in session.query(RoomDb):
@@ -670,7 +659,8 @@ or a livingspace."
                     for occupant in occupants:
                         for person in self.people:
                             if occupant == person.person_id:
-                                occupants_list.append(person)
+                                occupants_list.append(Fellow(p_record.person_id, p_record.person_name,
+                                    p_record.person_type, p_record.wants_accommodation))
                     room = OfficeSpace(r_record.room_type,
                                        r_record.room_name)
                     room.occupants = occupants_list
@@ -690,5 +680,25 @@ or a livingspace."
                                        r_record.room_name)
                     room.occupants = occupants_list
                     self.livingspaces.append(room)
+
+            for p_record in session.query(PersonDb):
+                if p_record.person_type.lower() == "fellow":
+                    person = Fellow(p_record.person_id, p_record.person_name,
+                                        p_record.person_type, p_record.wants_accommodation)
+                else:
+                    person = Staff(p_record.person_id, p_record.person_name,
+                                   p_record.person_type, p_record.wants_accommodation)
+
+                if p_record.room_allocated == "" and \
+                p_record.wants_accommodation.lower() == "y":
+                    self.livingspace_waitinglist.append(person)
+                office_names = []
+                for room in self.offices:
+                    office_names.append(room.room_name)
+                if p_record.room_allocated.split(" ")[0] in office_names and \
+                p_record.wants_accommodation.lower() == "y":
+                    self.livingspace_waitinglist.append(person)
+                if p_record.room_allocated == "":
+                    self.office_waitinglist.append(person)
 
             print(colored("\nData loaded succesfully!\n", "green"))
