@@ -79,8 +79,8 @@ Welcome to the Amity space allocation app!\n\n", "blue")\
         +colored("\t\t\t\t> save_state <db_name>")\
         +colored("\n\n \t\t\t> print_people")\
         +colored("\t\t\t\t\t\t> print_rooms")\
-        +colored("\n\n \t\t\t> allocate_unallocated_office <person_id>... <room_type>")\
-        +colored(" \t\t> load_state <db_name>\n\n\t\t\t> help\t\t\t\t\t\t\t> quit\n\n\t\t\t> clear")\
+        +colored("\n\n \t\t\t> allocate_unallocated <person_id>... <room_type>")\
+        +colored(" \n\n\t\t\t> load_state <db_name>\t\t\t\t\t> help\n\n\t\t\t> quit\t\t\t\t\t\t\t> clear")\
         +colored("\n\n\t\t\t* The commands with (...) allow you to enter multiple input. \
 Separate the input with a comma(,) ","yellow")\
         +colored("\n\n\t\t\t* For help on a specific command, type the command followed by '-h'", "yellow")\
