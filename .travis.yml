@@ -7,5 +7,5 @@ install:
     - pip install pytest-cov
 
 script:
-    - coverage run --omit=*/test_cases/* --source=my_app pytest test_cases
+    - coverage run --omit=*/test_cases/* --source=my_app pytest-cov test_cases
 after_success: coveralls
