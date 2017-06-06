@@ -188,11 +188,6 @@ Please use allocate_unallocated.")
         result = self.amity.allocate_unallocated_livingspace("122")
         self.assertEqual(result, "Allocation successful!")
 
-    def test_allocate_unallocated_person_not_registered(self):
-        """Tests for allocating a person not in the waitinglist an office"""
-        result = self.amity.allocate_unallocated("2789", "office")
-        self.assertEqual(result,"The person is not registered!")
-
     def test_allocate_unallocated_to_room_not_office_or_livingspace(self):
         """Tests the allocation of a room that is neither an office or livingspace."""
         self.amity.add_person("122", "Will Smith", "fellow", "y")
@@ -284,8 +279,8 @@ or a livingspace.")
         self.amity.add_person("1234", "Judith Gathua", "staff")
         self.amity.add_person("123", "Macdonald Felix", "fellow", "Y")
         self.amity.add_person("554", "Godwin Karanja", "fellow", "y")
-        self.amity.save_state("newamitydb")
-        self.amity.load_state("newamitydb")
+        self.amity.save_state("Amitydb")
+        self.amity.load_state("Amitydb")
         self.assertEqual(len(java.occupants), 3)
         self.assertEqual(len(pacific.occupants), 2)
 
@@ -299,8 +294,8 @@ or a livingspace.")
         self.amityy.add_person("1234", "Judith Gathua", "staff")
         self.amityy.add_person("123", "Macdonald Felix", "fellow", "Y")
         self.amityy.add_person("554", "Godwin Karanja", "fellow", "y")
-        self.amityy.save_state("oodb")
-        self.amity.load_state("oodb")
+        self.amityy.save_state("newdb")
+        self.amity.load_state("newdb")
         self.assertEqual(len(self.amityy.people), 3)
 
     def test_load_data_from_a_file_that_does_not_exist(self):
