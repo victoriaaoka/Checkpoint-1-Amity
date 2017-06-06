@@ -11,7 +11,8 @@ class PersonDb(Base):
     person_name = Column(String)
     person_type = Column(String)
     wants_accommodation = Column(String)
-    room_allocated = Column(String)
+    office_allocated = Column(String)
+    livingspace_allocated = Column(String)
 
 
 class RoomDb(Base):
