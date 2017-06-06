@@ -10,7 +10,7 @@ Usage:
     docopt  print_unallocated [<filename>]
     docopt reallocate_person <person_id> <new_room>
     docopt allocate_unallocated <person_id> <room_type>
-    docopt disallocate_person <person_id> <room_type>
+    docopt deallocate_person <person_id> <room_type>
     docopt delete_person <person_id>
     docopt delete_room <room_name>
     docopt save_state <db_name>
@@ -45,7 +45,7 @@ def docopt_cmd(func):
 
             print("\n\nInvalid Command!\n\n")
             print(e)
-            print ("\n\n")
+            print("\n\n")
             return
 
         except SystemExit:
@@ -62,29 +62,29 @@ def docopt_cmd(func):
 
 
 class AmitySpaceAllocationApp (cmd.Cmd):
-    intro = colored("\n\n\n\t\t"+"*" * 120, "white")+ colored("\n\n\t\t\t\tHello, \
+    intro = colored("\n\n\n\t\t"+"*" * 120, "white") + colored("\n\n\t\t\t\tHello, \
 Welcome to the Amity space allocation app!\n\n", "blue")\
-        +colored("\t\t\tThe commands are:\
+        + colored("\t\t\tThe commands are:\
 \n\n \t\t\t> add_person <person_id> <first_name> <last_name> \
 (FELLOW|STAFF) [<wants_accom>]\n\n\t\t\t")\
-        +colored("> create_room <room_type> <room_name> ...")\
-        +colored("\t\t> load_people <file_name>")\
-        +colored("\n\n \t\t\t> reallocate_person <person_id> <new_room>")\
-        +colored("\t\t> print_allocations [<file_name>]")\
-        +colored("\n\n \t\t\t> print_room <room_name>...")\
-        +colored("\t\t\t\t> print_unallocated [<filename>]")\
-        +colored("\n\n \t\t\t> disallocate_person <person_id>... <room_type>")\
-        +colored("\t\t> delete_person <person_id>...")\
-        +colored("\n\n \t\t\t> delete_room <room_name>...")\
-        +colored("\t\t\t\t> save_state <db_name>")\
-        +colored("\n\n \t\t\t> print_people")\
-        +colored("\t\t\t\t\t\t> print_rooms")\
-        +colored("\n\n \t\t\t> allocate_unallocated <person_id>... <room_type>")\
-        +colored(" \n\n\t\t\t> load_state <db_name>\t\t\t\t\t> help\n\n\t\t\t> quit\t\t\t\t\t\t\t> clear")\
-        +colored("\n\n\t\t\t* The commands with (...) allow you to enter multiple input. \
+        + colored("> create_room <room_type> <room_name> ...")\
+        + colored("\t\t> load_people <file_name>")\
+        + colored("\n\n \t\t\t> reallocate_person <person_id> <new_room>")\
+        + colored("\t\t> print_allocations [<file_name>]")\
+        + colored("\n\n \t\t\t> print_room <room_name>...")\
+        + colored("\t\t\t\t> print_unallocated [<filename>]")\
+        + colored("\n\n \t\t\t> deallocate_person <person_id>... <room_type>")\
+        + colored("\t\t> delete_person <person_id>...")\
+        + colored("\n\n \t\t\t> delete_room <room_name>...")\
+        + colored("\t\t\t\t> save_state <db_name>")\
+        + colored("\n\n \t\t\t> print_people")\
+        + colored("\t\t\t\t\t\t> print_rooms")\
+        + colored("\n\n \t\t\t> allocate_unallocated <person_id>... <room_type>")\
+        + colored(" \n\n\t\t\t> load_state <db_name>\t\t\t\t\t> help\n\n\t\t\t> quit\t\t\t\t\t\t\t> clear")\
+        + colored("\n\n\t\t\t* The commands with (...) allow you to enter multiple input. \
 Separate the input with a comma(,) ","yellow")\
-        +colored("\n\n\t\t\t* For help on a specific command, type the command followed by '-h'", "yellow")\
-        +colored("\n\n\t\t\t* use 'clear' to clear the screen", "yellow")\
+        + colored("\n\n\t\t\t* For help on a specific command, type the command followed by '-h'", "yellow")\
+        + colored("\n\n\t\t\t* use 'clear' to clear the screen", "yellow")\
         + colored("\n\n\t\t\t* Click on the screen to type.\n\n", "yellow") + colored("\t\t"+ "*" * 120 + "\n\n\n", "white")
 
     prompt = "(AmitySpaceAllocationApp) "
@@ -98,7 +98,6 @@ Separate the input with a comma(,) ","yellow")\
         roomnames = arg["<room_name>"].split(",")
         for room_name in roomnames:
             self.amity.create_room(room_type, room_name)
-
 
     @docopt_cmd
     def do_add_person(self, arg):
@@ -162,12 +161,12 @@ Separate the input with a comma(,) ","yellow")\
         self.amity.reallocate_person(person_id, new_room_name)
 
     @docopt_cmd
-    def do_disallocate_person(self, arg):
-        """Usage: disallocate_person  <person_id> <room_type>"""
+    def do_deallocate_person(self, arg):
+        """Usage: deallocate_person  <person_id> <room_type>"""
         room_type = arg["<room_type>"]
         person_ids = arg["<person_id>"].split(",")
         for person_id in person_ids:
-            self.amity.disallocate_person(person_id, room_type)
+            self.amity.deallocate_person(person_id, room_type)
 
     @docopt_cmd
     def do_delete_person(self, arg):
@@ -216,7 +215,6 @@ Separate the input with a comma(,) ","yellow")\
     def do_clear(self, arg):
         """Clears screen"""
         os.system("clear")
-
 
     def do_quit(self, arg):
         """Exits the Interactive Mode."""
