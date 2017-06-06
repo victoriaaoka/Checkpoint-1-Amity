@@ -432,7 +432,7 @@ livingspace_waitinglist.\n", "yellow"))
                         print(colored("\nA person can only be allocated an office \
     or a livingspace.\n", "red"))
                         return "A person can only be allocated an office \
-    or a livingspace."
+or a livingspace."
 
             elif room_type.lower() == "office":
                 self.allocate_unallocated_office(person_id)
@@ -442,7 +442,7 @@ livingspace_waitinglist.\n", "yellow"))
 
         except IndexError:
                     print(colored("\nThe person is not in the waitinglist!\n", "red"))
-
+                    return "The person is not in the waitinglist!"
 
     def disallocate_person(self, person_id, room_type):
         """
@@ -592,7 +592,6 @@ or a livingspace."
             print(colored("\nDatabase name can only be a string.\n", "red"))
         else:
             engine = create_engine("sqlite:///{}".format(db_name))
-
             Base.metadata.create_all(engine)
             Session = sessionmaker(bind=engine)
             session = Session()
@@ -602,19 +601,6 @@ or a livingspace."
                     session.execute(table.delete())
                     session.commit()
 
-            # save people data
-            for person in self.people:
-                room_allocated = ""
-                for room in all_rooms:
-                    if person in room.occupants:
-                        room_allocated += room.room_name + " "
-                person = PersonDb(person_id=person.person_id,
-                    person_name=person.person_name,
-                    person_type=person.person_type,
-                    wants_accommodation=person.wants_accom,
-                    room_allocated=room_allocated)
-                session.add(person)
-                session.commit()
             # save rooms data.
             for room in all_rooms:
                 room_occupants = ""
@@ -623,7 +609,25 @@ or a livingspace."
                 room = RoomDb(id=None, room_name=room.room_name,
                               room_type=room.room_type, occupants=room_occupants)
                 session.add(room)
-                session.commit()
+
+            # save people data
+            for person in self.people:
+                office_allocated = ""
+                for room in self.offices:
+                    if person in room.occupants:
+                        office_allocated += room.room_name
+                livingspace_allocated = ""
+                for room in self.livingspaces:
+                    if person in room.occupants:
+                        livingspace_allocated += room.room_name
+                person = PersonDb(person_id=person.person_id,
+                    person_name=person.person_name,
+                    person_type=person.person_type,
+                    wants_accommodation=person.wants_accom,
+                    office_allocated=office_allocated,
+                    livingspace_allocated=livingspace_allocated)
+                session.add(person)
+            session.commit()
             session.close()
             print(colored("\nData saved successfully!\n", "green"))
 
@@ -658,15 +662,14 @@ or a livingspace."
             # Load rooms data from db
             for r_record in session.query(RoomDb):
                 if r_record.room_type.lower() == "office":
+                    room = OfficeSpace(r_record.room_type,
+                                       r_record.room_name)
                     occupants_list = []
                     occupants = r_record.occupants.split(" ")
                     for occupant in occupants:
                         for person in self.people:
                             if occupant == person.person_id:
-                                occupants_list.append(Fellow(p_record.person_id, p_record.person_name,
-                                    p_record.person_type, p_record.wants_accommodation))
-                    room = OfficeSpace(r_record.room_type,
-                                       r_record.room_name)
+                                occupants_list.append(person)
                     room.occupants = occupants_list
                     self.offices.append(room)
 
@@ -679,9 +682,6 @@ or a livingspace."
                         for person in self.people:
                             if occupant == person.person_id:
                                 occupants_list.append(person)
-
-                    room = OfficeSpace(r_record.room_type,
-                                       r_record.room_name)
                     room.occupants = occupants_list
                     self.livingspaces.append(room)
 
@@ -694,16 +694,9 @@ or a livingspace."
                     person = Staff(p_record.person_id, p_record.person_name,
                                    p_record.person_type, p_record.wants_accommodation)
 
-                if p_record.room_allocated == "" and \
-                p_record.wants_accommodation.lower() == "y":
-                    self.livingspace_waitinglist.append(person)
-                office_names = []
-                for room in self.offices:
-                    office_names.append(room.room_name)
-                if p_record.room_allocated.split(" ")[0] in office_names and \
-                p_record.wants_accommodation.lower() == "y":
-                    self.livingspace_waitinglist.append(person)
-                if p_record.room_allocated == "":
+                if p_record.office_allocated == "":
                     self.office_waitinglist.append(person)
 
+                if p_record.livingspace_allocated == "" and p_record.wants_accommodation.lower() == "y":
+                    self.livingspace_waitinglist.append(person)
             print(colored("\nData loaded succesfully!\n", "green"))
