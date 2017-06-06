@@ -145,8 +145,8 @@ Please use allocate_unallocated.")
         self.amity.add_person("111", "Judith Aoka", "fellow")
         self.amity.create_room("livingspace", "Bakhita")
         result = self.amity.reallocate_person("111", "Bakhita")
-        self.assertEqual(result,
-            "The person has not been allocated a livingspace yet.")
+        self.assertEqual(result, "The person has not been \
+allocated a livingspace yet.")
 
     def test_reallocate_from_livingspace_to_office(self):
         """Tests for reallocation from livingspace to office."""
@@ -154,8 +154,7 @@ Please use allocate_unallocated.")
         self.amity.add_person("111", "Judith Aoka", "fellow", "y")
         self.amity.create_room("office", "java")
         result = self.amity.reallocate_person("111", "java")
-        self.assertEqual(result,
-            "The person does not have any room currently. \
+        self.assertEqual(result, "The person does not have any room currently. \
 Please use allocate_unallocated.")
 
     def test_print_unallocated(self):
@@ -192,24 +191,24 @@ Please use allocate_unallocated.")
         """Tests the allocation of a room that is neither an office or livingspace."""
         self.amity.add_person("122", "Will Smith", "fellow", "y")
         result = self.amity.allocate_unallocated("122", "game_room")
-        self.assertEqual(result,"A person can only be allocated an office \
+        self.assertEqual(result, "A person can only be allocated an office \
 or a livingspace.")
 
-    def test_disallocate_person_not_registered(self):
+    def test_deallocate_person_not_registered(self):
         """Tests the disallocation of a person not registered."""
-        result = self.amity.disallocate_person("2789", "office")
+        result = self.amity.deallocate_person("2789", "office")
         self.assertEqual(result,"The person is not registered yet.")
 
-    def test_disallocate_person_not_assigned_an_office(self):
+    def test_deallocate_person_not_assigned_an_office(self):
         """Tests the disallocation of a person not assigned an office."""
         self.amity.add_person("1", "Max Black", "fellow")
-        result = self.amity.disallocate_person("1", "office")
+        result = self.amity.deallocate_person("1", "office")
         self.assertEqual(result, "The person has not been allocated any office.")
 
-    def test_disallocate_person_not_assigned_a_livingspace(self):
+    def test_deallocate_person_not_assigned_a_livingspace(self):
         """Tests the disallocation of a person not assigned a livingspace."""
         self.amity.add_person("1", "Max Black", "fellow", "y")
-        result = self.amity.disallocate_person("1", "livingspace")
+        result = self.amity.deallocate_person("1", "livingspace")
         self.assertEqual(result, "The person has not been allocated any livingspace.")
 
     def test_disallocation_can_only_be_from_an_office_or_livingspace(self):
@@ -217,21 +216,21 @@ or a livingspace.")
         Tests the disallocation of a person from a room that is neither
         an office or a livingspace.
         """
-        self.amity.create_room("office","mongo")
+        self.amity.create_room("office", "mongo")
         self.amity.add_person("1", "Max Black", "fellow")
-        result = self.amity.disallocate_person("1", "game_room")
-        self.assertEqual(result, "A person can only be disallocated from an office \
+        result = self.amity.deallocate_person("1", "game_room")
+        self.assertEqual(result, "A person can only be deallocated from an office \
 or a livingspace.")
 
-    def test_disallocate_person_successfully(self):
+    def test_deallocate_person_successfully(self):
         """Tests for successful disallocation of a person from an office."""
         ninjaz = self.amity.create_room("office", "Ninjaz")
         self.amity.add_person("123", "Aoka Victoria", "fellow")
         self.amity.add_person("345", "Debon Vanmou", "fellow")
         self.amity.add_person("98", "Max Black", "staff")
         self.amity.add_person("1000", "Carolyn Chaning", "fellow")
-        result = self.amity.disallocate_person("123", "office")
-        self.assertEqual(result, "Person disallocated successfully!")
+        result = self.amity.deallocate_person("123", "office")
+        self.assertEqual(result, "Person deallocated successfully!")
         self.assertEqual(len(ninjaz.occupants), 3)
 
     def test_delete_person_not_registered(self):
@@ -274,7 +273,7 @@ or a livingspace.")
         Tests for successful saving and loading of room data
         to and from a database.
         """
-        java = self.amity.create_room("office","Java")
+        java = self.amity.create_room("office", "Java")
         pacific = self.amity.create_room("livingspace", "Pacific")
         self.amity.add_person("1234", "Judith Gathua", "staff")
         self.amity.add_person("123", "Macdonald Felix", "fellow", "Y")
