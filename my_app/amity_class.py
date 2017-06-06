@@ -330,8 +330,8 @@ Please use allocate_unallocated.\n", "red"))
                         return "The person does not have any room currently. \
 Please use allocate_unallocated."
                     else:
-                        print("The person has not been allocated a "
-                            + new_room.room_type + "yet.")
+                        print(colored("\nThe person has not been allocated a "
+                            + new_room.room_type + "yet.", "red"))
                         return "The person has not been allocated a " \
                         + new_room.room_type + " yet."
 
