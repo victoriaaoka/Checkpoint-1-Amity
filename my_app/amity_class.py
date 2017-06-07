@@ -565,6 +565,7 @@ or a livingspace."
             print(colored(table, "blue"))
         else:
             print(colored("\nThere are no people registered yet.", "red"))
+            return "There are no people registered yet."
 
     def print_rooms(self):
         """
@@ -585,6 +586,7 @@ or a livingspace."
             print(colored(table, "blue"))
         else:
             print(colored("\nThere are no rooms in the Amity.", "red"))
+            return "There are no rooms in the Amity."
 
     def save_state(self, db_name):
         """
