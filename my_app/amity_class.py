@@ -474,17 +474,18 @@ or a livingspace."
 " + room_type + "!", "red"))
             return "The person has not been allocated any " + room_type + "."
 
-        if room_type.lower == "office":
+        if room_type.lower() == "office":
             self.office_waitinglist.append(person_to_deallocate)
             persons_room.occupants.remove(person_to_deallocate)
             print(colored("\nPerson deallocated successfully!\n", "green"))
             return "Person deallocated successfully!"
         else:
-            self.livingspace_waitinglist.append(
-                person_to_deallocate)
-            persons_room.occupants.remove(person_to_deallocate)
-            print(colored("\nPerson deallocated successfully!\n", "green"))
-            return "Person deallocated successfully!"
+            if room_type.lower() == "livingspace":
+                self.livingspace_waitinglist.append(
+                    person_to_deallocate)
+                persons_room.occupants.remove(person_to_deallocate)
+                print(colored("\nPerson deallocated successfully!\n", "green"))
+                return "Person deallocated successfully!"
 
 
     def delete_person(self, person_id):
