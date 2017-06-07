@@ -268,6 +268,16 @@ or a livingspace.")
         self.assertEqual(result, "Room deleted successfully!")
         self.assertEqual(len(self.amity.livingspace_waitinglist), 2)
 
+    def test_print_people_when_nobody_has_been_registered(self):
+        """Tests for print_people when there are no people registered in the amity."""
+        result = self.amity.print_people()
+        self.assertEqual(result, "There are no people registered yet.")
+
+    def test_print_room_when_amity_has_no_rooms(self):
+        """Tests for print_rooms when there are no rooms created in the amity."""
+        result = self.amity.print_rooms()
+        self.assertEqual(result, "There are no rooms in the Amity.")
+
     def test_save_and_load_room_data_to_and_from_DB(self):
         """
         Tests for successful saving and loading of room data
