@@ -1,6 +1,6 @@
 ## BC17 checkpoint 1 <br /> [![Build Status](https://travis-ci.org/victoriaaoka/Checkpoint-1-Amity.svg?branch=task0)](https://travis-ci.org/victoriaaoka/Checkpoint-1-Amity) [![Coverage Status](https://coveralls.io/repos/github/victoriaaoka/Checkpoint-1-Amity/badge.svg?branch=task0)](https://coveralls.io/github/victoriaaoka/Checkpoint-1-Amity?branch=task0)
 ### Introduction
-The Amity is one of Andela Kenya's facilities that has several rooms. A room can be either a Living Space or an Office Space. An Office Space can accomodate a maximum of 6 people and the Living Space can accomodate a maximum of 4. When a new Fellow joins Andela they are assigned an office space and an optional living space if they choose to opt in. When a new Staff joins they are assigned an office space only. This application seeks to digitize and randomize the room allocation process.
+The Amity is one of Andela Kenya's facilities that has several rooms. A room can be either a Living Space or an Office Space. An Office Space can accomodate a maximum of 6 people and the Living Space can accomodate a maximum of 4. When a new Fellow joins Andela they are assigned an office space and an optional living space if they choose to opt in. When a new Staff joins they are assigned an office space only. This application seeks to digitize and randomize the room allocation process. Here is a link to the demo video. https://asciinema.org/a/ebwb9fdop1dufzrfbb8pm20p3
 ### Installation and setup
 - prepare a directory for the project:
 
